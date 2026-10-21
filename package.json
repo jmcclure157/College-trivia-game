@@ -1,0 +1,12 @@
+{
+  "name": "college-town-trivia",
+  "private": true,
+  "type": "module",
+  "description": "Browser trivia game on the home towns of Power 4 college football schools. No dependencies; tests use Node's built-in test runner.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}
