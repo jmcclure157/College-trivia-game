@@ -108,12 +108,14 @@ function renderQuestion() {
   const q = quiz.current;
   renderStats();
 
-  $("conference").textContent = q.schools[0].conference;
+  $("conference").textContent = [...new Set(q.schools.map((s) => s.conference))].join(" / ");
   const strong = document.createElement("strong");
   strong.textContent = q.prompt;
   const prompt = $("prompt");
   prompt.textContent = "";
   if (q.mode === Mode.SCHOOL) prompt.append("Which school is in ", strong, "?");
+  else if (q.mode === Mode.MASCOT) prompt.append("What is the mascot of ", strong, "?");
+  else if (q.mode === Mode.MASCOT_SCHOOL) prompt.append("Which school is known as the ", strong, "?");
   else prompt.append("What town is ", strong, " in?");
 
   $("feedback").textContent = "";
@@ -142,7 +144,7 @@ function renderQuestion() {
     input.value = "";
     input.disabled = false;
     input.className = "";
-    input.placeholder = q.mode === Mode.SCHOOL ? "School name" : "Town name";
+    input.placeholder = { [Mode.TOWN]: "Town name", [Mode.MASCOT]: "Mascot" }[q.mode] || "School name";
     typed.querySelector("button").disabled = false;
     input.focus();
   }
@@ -155,7 +157,10 @@ function submit(answer, button) {
 
   const feedback = $("feedback");
   feedback.className = `feedback ${result.correct ? "right" : "wrong"}`;
-  if (result.close) feedback.textContent = `Close enough! It's spelled ${result.correctAnswer}.`;
+  if (result.close) {
+    const others = q.schools.length > 1 ? ` (${q.schools.map((s) => s.school).join(", ")} all count.)` : "";
+    feedback.textContent = `Close enough! It's spelled ${result.spelling}.${others}`;
+  }
   else if (result.correct) feedback.textContent = `Correct! ${result.correctAnswer}.`;
   else feedback.textContent = `Not quite. The answer is ${result.correctAnswer}.`;
 

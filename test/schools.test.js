@@ -49,3 +49,27 @@ test("spot-check realignment and well-known towns", () => {
   assert.equal(find("Ohio State").town, "Columbus");
   assert.equal(find("USC").town, "Los Angeles");
 });
+
+test("every school has a mascot, and only the expected nicknames are shared", () => {
+  const byMascot = {};
+  for (const s of SCHOOLS) {
+    assert.ok(typeof s.mascot === "string" && s.mascot.trim() !== "", `${s.school} has no mascot`);
+    (byMascot[s.mascot] ||= []).push(s.school);
+  }
+  const shared = Object.fromEntries(Object.entries(byMascot).filter(([, names]) => names.length > 1));
+  assert.deepEqual(shared, {
+    Tigers: ["Auburn", "LSU", "Missouri", "Clemson"],
+    Bulldogs: ["Georgia", "Mississippi State"],
+    Wildcats: ["Kentucky", "Northwestern", "Arizona", "Kansas State"],
+    Cougars: ["BYU", "Houston"],
+  });
+});
+
+test("mascot spot checks", () => {
+  const mascot = (name) => SCHOOLS.find((s) => s.school === name).mascot;
+  assert.equal(mascot("Alabama"), "Crimson Tide");
+  assert.equal(mascot("Ohio State"), "Buckeyes");
+  assert.equal(mascot("Stanford"), "Cardinal");
+  assert.equal(mascot("Louisville"), "Cardinals");
+  assert.equal(mascot("Syracuse"), "Orange");
+});

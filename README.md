@@ -10,6 +10,11 @@ Plain HTML, CSS and JavaScript. No build step, no dependencies, nothing is saved
    - **Name the school** (reverse mode): you're shown a town (e.g. *Tuscaloosa*) and name the school.
      When towns are shown without states, Columbia accepts Missouri or South Carolina, and Los Angeles
      accepts UCLA or USC.
+   - **Name the mascot**: you're shown a school (e.g. *Alabama*) and name its team nickname (*Crimson Tide*).
+   - **Name the school from its mascot**: you're shown a nickname (e.g. *Crimson Tide*) and name the school.
+     Shared nicknames are asked once and accept any of their schools: *Tigers* (Auburn, LSU, Missouri,
+     Clemson), *Wildcats* (Kentucky, Northwestern, Arizona, Kansas State), *Bulldogs* (Georgia,
+     Mississippi State) and *Cougars* (BYU, Houston). Common short forms count too (*Vols*, *Terps*, *Huskers*).
 2. Pick **how to answer**: **multiple choice** (4 options; the wrong ones are mostly from the same
    conference, so they're plausible) or **type the answer**. Typed answers ignore capital letters,
    punctuation and spacing, so `winston salem`, `Winston-Salem` and `Winston-Salem, NC` all count.
@@ -37,7 +42,7 @@ plays football as an independent, so it is left out. The town is the city the ma
 ```
 index.html          the page: setup screen, question screen, results screen
 style.css           look and layout
-src/schools.js      the data: { school, town, state, conference } for every school
+src/schools.js      the data: { school, town, state, conference, mascot } for every school
 src/quiz.js         the game rules (no page code): questions, choices, answer matching, scoring
 src/ui.js           page code: draws each screen and passes clicks/typing to quiz.js
 test/               tests for the data and the rules

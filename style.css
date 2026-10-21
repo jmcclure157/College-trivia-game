@@ -96,6 +96,10 @@ h1 {
   font-weight: 700;
 }
 
+.heat[hidden] {
+  display: none;
+}
+
 .flames {
   display: inline-flex;
   color: #ea580c;

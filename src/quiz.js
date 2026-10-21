@@ -5,7 +5,14 @@ import { SCHOOLS, STATE_NAMES } from "./schools.js";
 export const Mode = Object.freeze({
   TOWN: "town", // shown a school, name its town
   SCHOOL: "school", // shown a town, name the school (reverse mode)
+  MASCOT: "mascot", // shown a school, name its mascot
+  MASCOT_SCHOOL: "mascot-school", // shown a mascot, name the school
 });
+
+// Modes whose answer is a school name. Several schools can share a prompt (a town or a mascot).
+export function answersAreSchools(mode) {
+  return mode === Mode.SCHOOL || mode === Mode.MASCOT_SCHOOL;
+}
 
 export const AnswerStyle = Object.freeze({
   CHOICE: "choice",
@@ -51,9 +58,15 @@ export function townText(school, showStates = false) {
   return showStates ? townLabel(school) : school.town;
 }
 
-// Town mode: one question per school. Reverse mode: one question per town, because some schools
-// share one (UCLA and USC in Los Angeles; Missouri and South Carolina in Columbia when states are hidden)
-// and any of them is a right answer.
+function promptText(mode, school, showStates) {
+  if (mode === Mode.SCHOOL) return townText(school, showStates);
+  if (mode === Mode.MASCOT_SCHOOL) return school.mascot;
+  return school.school;
+}
+
+// Modes that ask for a town or mascot: one question per school. Modes that ask for a school: one
+// question per prompt, because some schools share one (UCLA and USC in Los Angeles; Missouri and
+// South Carolina in Columbia when states are hidden; four Tigers) and any of them is a right answer.
 export function buildQuestions({
   mode = Mode.TOWN,
   schools = SCHOOLS,
@@ -64,28 +77,35 @@ export function buildQuestions({
 } = {}) {
   const selected = filterSchools(schools, conferences);
   let questions;
-  if (mode === Mode.SCHOOL) {
-    const byTown = new Map();
+  if (answersAreSchools(mode)) {
+    const byPrompt = new Map();
     for (const s of selected) {
-      const key = townText(s, showStates);
-      if (!byTown.has(key)) byTown.set(key, []);
-      byTown.get(key).push(s);
+      const key = promptText(mode, s, showStates);
+      if (!byPrompt.has(key)) byPrompt.set(key, []);
+      byPrompt.get(key).push(s);
     }
-    questions = Array.from(byTown, ([label, group]) => ({
+    questions = Array.from(byPrompt, ([label, group]) => ({
       mode,
       prompt: label,
       schools: group,
       correct: group.map((s) => s.school),
     }));
   } else {
-    questions = selected.map((s) => ({ mode, prompt: s.school, schools: [s], correct: [townText(s, showStates)] }));
+    questions = selected.map((s) => ({
+      mode,
+      prompt: promptText(mode, s, showStates),
+      schools: [s],
+      correct: [answerLabel(mode, s, showStates)],
+    }));
   }
   questions = shuffle(questions, rng);
   return count ? questions.slice(0, count) : questions;
 }
 
 function answerLabel(mode, school, showStates) {
-  return mode === Mode.SCHOOL ? school.school : townText(school, showStates);
+  if (answersAreSchools(mode)) return school.school;
+  if (mode === Mode.MASCOT) return school.mascot;
+  return townText(school, showStates);
 }
 
 // Wrong options come from the same conference first, then from the rest of `pool`.
@@ -107,7 +127,10 @@ export function makeChoices(question, { pool = SCHOOLS, rng = Math.random, count
 }
 
 function answerForms(mode, school, { withStates = true } = {}) {
-  if (mode === Mode.SCHOOL) return [school.school].concat(school.schoolAliases || []);
+  if (answersAreSchools(mode)) return [school.school].concat(school.schoolAliases || []);
+  if (mode === Mode.MASCOT) {
+    return [school.mascot, `${school.school} ${school.mascot}`].concat(school.mascotAliases || []);
+  }
   const forms = [];
   for (const town of [school.town].concat(school.townAliases || [])) {
     forms.push(town);
@@ -225,6 +248,27 @@ export function matchAnswer(question, answer, { forgiveTypos = true, pool = SCHO
   return right !== Infinity && right < closestDistance(guess, otherForms) ? "close" : null;
 }
 
+// The right answer the player's typo was closest to, e.g. "Clemson" for "Clemsen" when Tigers is asked.
+export function closestAnswerText(question, answer) {
+  const given = normalize(answer);
+  let best = question.schools[0];
+  let bestForm = null;
+  let bestDist = Infinity;
+  for (const s of question.schools) {
+    for (const form of answerForms(question.mode, s)) {
+      const dist = editDistance(given, normalize(form));
+      if (dist < bestDist) {
+        best = s;
+        bestForm = form;
+        bestDist = dist;
+      }
+    }
+  }
+  if (question.mode === Mode.TOWN) return townLabel(best);
+  if (question.mode === Mode.MASCOT) return bestForm; // e.g. "Tennessee Volunteers" or "Vols", as typed
+  return answerLabel(question.mode, best);
+}
+
 export function isCorrect(question, answer, options) {
   return matchAnswer(question, answer, options) !== null;
 }
@@ -244,7 +288,7 @@ export function isStreakMilestone(streak) {
 
 // The full answer shown after each question, always with the state so the player learns it.
 export function correctAnswerText(question) {
-  const labels = question.schools.map((s) => (question.mode === Mode.SCHOOL ? s.school : townLabel(s)));
+  const labels = question.schools.map((s) => (question.mode === Mode.TOWN ? townLabel(s) : answerLabel(question.mode, s)));
   return labels.join(" or ");
 }
 
@@ -305,6 +349,7 @@ export class Quiz {
     return {
       correct,
       close: match === "close",
+      spelling: match === "close" ? closestAnswerText(question, input) : null,
       correctAnswer: correctAnswerText(question),
       milestone: correct && isStreakMilestone(this.streak),
     };

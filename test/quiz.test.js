@@ -8,6 +8,8 @@ import {
   Mode,
   Quiz,
   buildQuestions,
+  closestAnswerText,
+  correctAnswerText,
   editDistance,
   isCorrect,
   isStreakMilestone,
@@ -212,6 +214,46 @@ test("choices fall back to other conferences when the pool is small", () => {
   assert.equal(choices.length, 4);
   assert.ok(choices.includes("Tuscaloosa"));
   assert.ok(choices.includes("Auburn"));
+});
+
+test("mascot mode: shown a school, name its mascot, with short forms and typos", () => {
+  const [q] = buildQuestions({ mode: Mode.MASCOT, schools: [byName("Tennessee")] });
+  assert.equal(q.prompt, "Tennessee");
+  assert.deepEqual(q.correct, ["Volunteers"]);
+  for (const ok of ["volunteers", "Vols", "Tennessee Volunteers", "Volunters"]) assert.ok(isCorrect(q, ok), ok);
+  assert.ok(!isCorrect(q, "Commodores"));
+  const choices = makeChoices(q, { rng: seeded(2) });
+  assert.equal(choices.length, CHOICE_COUNT);
+  assert.ok(choices.includes("Volunteers"));
+});
+
+test("mascot mode never accepts a different school's similar nickname", () => {
+  const mascot = (name) => buildQuestions({ mode: Mode.MASCOT, schools: [byName(name)] })[0];
+  assert.equal(matchAnswer(mascot("Stanford"), "Cardinals"), null);
+  assert.equal(matchAnswer(mascot("Louisville"), "Cardinal"), null);
+  assert.equal(matchAnswer(mascot("Washington"), "Huskers"), null);
+});
+
+test("reverse mascot mode asks about shared nicknames once and accepts any of their schools", () => {
+  const questions = buildQuestions({ mode: Mode.MASCOT_SCHOOL });
+  assert.equal(questions.length, SCHOOLS.length - 3 - 1 - 3 - 1);
+  const tigers = questions.find((q) => q.prompt === "Tigers");
+  for (const name of ["Auburn", "LSU", "Missouri", "Clemson", "Mizzou"]) assert.ok(isCorrect(tigers, name), name);
+  assert.ok(!isCorrect(tigers, "Alabama"));
+  assert.equal(correctAnswerText(tigers), "Auburn or LSU or Missouri or Clemson");
+  assert.equal(closestAnswerText(tigers, "Clemsen"), "Clemson");
+  const [vols] = buildQuestions({ mode: Mode.MASCOT, schools: [byName("Tennessee")] });
+  assert.equal(closestAnswerText(vols, "Tennesee Volunteers"), "Tennessee Volunteers");
+  assert.equal(closestAnswerText(vols, "Volunters"), "Volunteers");
+  assert.equal(closestAnswerText(townQuestion("Iowa"), "Iowa Ciyt"), "Iowa City, IA");
+  for (let seed = 1; seed <= 30; seed++) {
+    const choices = makeChoices(tigers, { rng: seeded(seed) });
+    assert.equal(choices.length, CHOICE_COUNT);
+    assert.equal(choices.filter((c) => tigers.correct.includes(c)).length, 1);
+  }
+  const [tide] = buildQuestions({ mode: Mode.MASCOT_SCHOOL, schools: [byName("Alabama")] });
+  assert.equal(tide.prompt, "Crimson Tide");
+  assert.ok(isCorrect(tide, "alabama"));
 });
 
 test("Quiz tracks score, streak, best streak and misses", () => {
