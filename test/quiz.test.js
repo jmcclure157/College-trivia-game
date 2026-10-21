@@ -242,6 +242,9 @@ test("reverse mascot mode asks about shared nicknames once and accepts any of th
   assert.ok(!isCorrect(tigers, "Alabama"));
   assert.equal(correctAnswerText(tigers), "Auburn or LSU or Missouri or Clemson");
   assert.equal(closestAnswerText(tigers, "Clemsen"), "Clemson");
+  const [vols] = buildQuestions({ mode: Mode.MASCOT, schools: [byName("Tennessee")] });
+  assert.equal(closestAnswerText(vols, "Tennesee Volunteers"), "Tennessee Volunteers");
+  assert.equal(closestAnswerText(vols, "Volunters"), "Volunteers");
   assert.equal(closestAnswerText(townQuestion("Iowa"), "Iowa Ciyt"), "Iowa City, IA");
   for (let seed = 1; seed <= 30; seed++) {
     const choices = makeChoices(tigers, { rng: seeded(seed) });

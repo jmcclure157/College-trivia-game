@@ -252,17 +252,21 @@ export function matchAnswer(question, answer, { forgiveTypos = true, pool = SCHO
 export function closestAnswerText(question, answer) {
   const given = normalize(answer);
   let best = question.schools[0];
+  let bestForm = null;
   let bestDist = Infinity;
   for (const s of question.schools) {
     for (const form of answerForms(question.mode, s)) {
       const dist = editDistance(given, normalize(form));
       if (dist < bestDist) {
         best = s;
+        bestForm = form;
         bestDist = dist;
       }
     }
   }
-  return question.mode === Mode.TOWN ? townLabel(best) : answerLabel(question.mode, best);
+  if (question.mode === Mode.TOWN) return townLabel(best);
+  if (question.mode === Mode.MASCOT) return bestForm; // e.g. "Tennessee Volunteers" or "Vols", as typed
+  return answerLabel(question.mode, best);
 }
 
 export function isCorrect(question, answer, options) {
