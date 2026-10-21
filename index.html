@@ -25,6 +25,11 @@
             <label><input type="radio" name="style" value="typed" /> Type the answer</label>
           </fieldset>
           <fieldset>
+            <legend>Options</legend>
+            <label><input type="checkbox" name="forgiveTypos" checked /> Forgive small typos when typing</label>
+            <label><input type="checkbox" name="showStates" /> Show states (easier)</label>
+          </fieldset>
+          <fieldset>
             <legend>Conferences</legend>
             <div id="conferences" class="conferences"></div>
           </fieldset>
@@ -47,6 +52,11 @@
           <span id="score"></span>
           <span id="streak"></span>
         </div>
+        <div id="heat" class="heat" aria-live="polite" hidden>
+          <span class="flames" aria-hidden="true"></span>
+          <span class="heat-label"></span>
+        </div>
+        <div id="embers" class="embers" aria-hidden="true"></div>
         <p id="conference" class="tag"></p>
         <h2 id="prompt" class="prompt"></h2>
         <div id="choices" class="choices"></div>
