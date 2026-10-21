@@ -104,6 +104,12 @@ test("choices in reverse mode never offer a second right answer", () => {
   }
 });
 
+test("choices honor smaller option counts, including a single option", () => {
+  const q = townQuestion("Alabama");
+  assert.deepEqual(makeChoices(q, { count: 1, rng: seeded(1) }), ["Tuscaloosa, AL"]);
+  assert.equal(makeChoices(q, { count: 2, rng: seeded(1) }).length, 2);
+});
+
 test("choices fall back to other conferences when the pool is small", () => {
   const pool = [byName("Alabama"), byName("Auburn"), byName("Ohio State"), byName("Utah"), byName("Duke")];
   const choices = makeChoices(townQuestion("Alabama"), { pool, rng: seeded(4) });

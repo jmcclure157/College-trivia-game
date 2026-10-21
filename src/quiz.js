@@ -89,7 +89,6 @@ export function makeChoices(question, { pool = SCHOOLS, rng = Math.random, count
     const label = answerLabel(question.mode, s);
     if (wrong.indexOf(label) === -1) wrong.push(label);
   }
-  }
   const right = question.correct[Math.floor(rng() * question.correct.length)];
   return shuffle([right].concat(wrong), rng);
 }
