@@ -106,13 +106,44 @@ export function makeChoices(question, { pool = SCHOOLS, rng = Math.random, count
   return shuffle([right].concat(wrong), rng);
 }
 
-function answerForms(mode, school) {
+function answerForms(mode, school, { withStates = true } = {}) {
   if (mode === Mode.SCHOOL) return [school.school].concat(school.schoolAliases || []);
   const forms = [];
   for (const town of [school.town].concat(school.townAliases || [])) {
-    forms.push(town, `${town} ${school.state}`, `${town} ${STATE_NAMES[school.state]}`);
+    forms.push(town);
+    if (withStates) forms.push(`${town} ${school.state}`, `${town} ${STATE_NAMES[school.state]}`);
   }
   return forms;
+}
+
+// States with no Power 4 school, so a typed wrong state like "NV" is still recognized as a state.
+const OTHER_STATES = {
+  AK: "Alaska", CT: "Connecticut", DE: "Delaware", HI: "Hawaii", ID: "Idaho",
+  ME: "Maine", MT: "Montana", NV: "Nevada", NH: "New Hampshire", NM: "New Mexico",
+  ND: "North Dakota", RI: "Rhode Island", SD: "South Dakota", VT: "Vermont", WY: "Wyoming",
+};
+
+const STATE_WORDS = new Map();
+for (const [code, name] of Object.entries({ ...STATE_NAMES, ...OTHER_STATES })) {
+  STATE_WORDS.set(code.toLowerCase(), code);
+  STATE_WORDS.set(name.toLowerCase(), code);
+}
+
+// Splits a typed town answer like "Winston Salem, NC" into its town ("winstonsalem") and state ("NC").
+export function splitState(answer) {
+  const words = String(answer)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .split(" ");
+  for (const size of [2, 1]) {
+    if (words.length <= size) continue;
+    const state = STATE_WORDS.get(words.slice(-size).join(" "));
+    if (state) return { town: normalize(words.slice(0, -size).join(" ")), state };
+  }
+  return { town: normalize(answer), state: null };
 }
 
 export function acceptedAnswers(question) {
@@ -165,17 +196,33 @@ export function matchAnswer(question, answer, { forgiveTypos = true, pool = SCHO
   if (accepted.indexOf(given) !== -1) return "exact";
   if (!forgiveTypos) return null;
 
-  const others = [];
-  for (const s of pool) {
-    if (question.schools.indexOf(s) !== -1) continue;
-    for (const form of answerForms(question.mode, s)) {
-      const n = normalize(form);
-      if (accepted.indexOf(n) === -1) others.push(n);
+  const otherSchools = pool.filter((s) => question.schools.indexOf(s) === -1);
+  const othersFor = (options) => {
+    const out = [];
+    for (const s of otherSchools) {
+      for (const form of answerForms(question.mode, s, options)) {
+        const n = normalize(form);
+        if (accepted.indexOf(n) === -1) out.push(n);
+      }
     }
+    return out;
+  };
+  if (othersFor().indexOf(given) !== -1) return null;
+
+  // Town typos are judged on the town alone; a state, if typed, must be right.
+  let guess = given;
+  let rightForms = accepted;
+  let otherForms = othersFor();
+  if (question.mode === Mode.TOWN) {
+    const { town, state } = splitState(answer);
+    if (state && !question.schools.some((s) => s.state === state)) return null;
+    guess = town;
+    rightForms = [];
+    for (const s of question.schools) rightForms.push(...answerForms(Mode.TOWN, s, { withStates: false }).map(normalize));
+    otherForms = othersFor({ withStates: false });
   }
-  if (others.indexOf(given) !== -1) return null;
-  const right = closestDistance(given, accepted);
-  return right !== Infinity && right < closestDistance(given, others) ? "close" : null;
+  const right = closestDistance(guess, rightForms);
+  return right !== Infinity && right < closestDistance(guess, otherForms) ? "close" : null;
 }
 
 export function isCorrect(question, answer, options) {

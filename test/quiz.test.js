@@ -52,8 +52,20 @@ test("typed town answers are matched leniently", () => {
   for (const ok of ["Winston-Salem", "winston salem", "WINSTON SALEM, NC", "Winston-Salem, North Carolina"]) {
     assert.ok(isCorrect(q, ok), ok);
   }
-  for (const bad of ["", "   ", "Winston", "Raleigh"]) assert.ok(!isCorrect(q, bad), bad);
-  assert.ok(!isCorrect(q, "Winston-Salem, SC", { forgiveTypos: false }));
+  for (const bad of ["", "   ", "Winston", "Raleigh", "Winston-Salem, SC", "Winston-Salem South Carolina"]) {
+    assert.ok(!isCorrect(q, bad), bad);
+  }
+});
+
+test("a town typo with the right state counts, but never with a wrong state", () => {
+  const q = townQuestion("Wake Forest");
+  assert.equal(matchAnswer(q, "Winston-Salme, NC"), "close");
+  assert.equal(matchAnswer(q, "winston salme north carolina"), "close");
+  assert.equal(matchAnswer(q, "Winston-Salme, SC"), null);
+  assert.equal(matchAnswer(q, "Winston-Salem, NV"), null);
+  assert.equal(matchAnswer(townQuestion("Missouri"), "Columbai, SC"), null);
+  assert.equal(matchAnswer(townQuestion("Oregon"), "Eugene"), "exact");
+  assert.equal(matchAnswer(townQuestion("Oregon"), "Eugen"), "close");
 });
 
 test("town aliases are accepted", () => {
