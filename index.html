@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>College Town Trivia</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main>
+      <h1>College Town Trivia</h1>
+      <p class="subtitle">Where does every Power 4 football school call home?</p>
+
+      <section id="setup" class="card">
+        <form id="setup-form">
+          <fieldset>
+            <legend>Question type</legend>
+            <label><input type="radio" name="mode" value="town" checked /> Name the town (shown a school)</label>
+            <label><input type="radio" name="mode" value="school" /> Name the school (shown a town)</label>
+          </fieldset>
+          <fieldset>
+            <legend>How to answer</legend>
+            <label><input type="radio" name="style" value="choice" checked /> Multiple choice</label>
+            <label><input type="radio" name="style" value="typed" /> Type the answer</label>
+          </fieldset>
+          <fieldset>
+            <legend>Conferences</legend>
+            <div id="conferences" class="conferences"></div>
+          </fieldset>
+          <label class="count">
+            Questions
+            <select name="count">
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="all" selected>All</option>
+            </select>
+          </label>
+          <p id="setup-error" class="error" role="alert"></p>
+          <button type="submit" class="primary">Start</button>
+        </form>
+      </section>
+
+      <section id="game" class="card" hidden>
+        <div class="stats">
+          <span id="progress"></span>
+          <span id="score"></span>
+          <span id="streak"></span>
+        </div>
+        <p id="conference" class="tag"></p>
+        <h2 id="prompt" class="prompt"></h2>
+        <div id="choices" class="choices"></div>
+        <form id="typed" class="typed" hidden>
+          <input id="typed-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Your answer" />
+          <button type="submit" class="primary">Submit</button>
+        </form>
+        <p id="feedback" class="feedback" aria-live="polite"></p>
+        <button id="next" type="button" class="primary" hidden>Next</button>
+      </section>
+
+      <section id="results" class="card" hidden>
+        <h2>Results</h2>
+        <p id="final-score" class="final-score"></p>
+        <p id="final-streak"></p>
+        <h3 id="missed-title"></h3>
+        <ul id="missed" class="missed"></ul>
+        <div class="controls">
+          <button id="again" type="button" class="primary">Play again</button>
+          <button id="settings" type="button">Change settings</button>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="src/ui.js"></script>
+  </body>
+</html>

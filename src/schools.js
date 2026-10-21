@@ -1,0 +1,91 @@
+// Every Power 4 football school for the 2025-26 season and the town its main campus is in.
+// `townAliases` / `schoolAliases` list other answers the typed mode should also accept.
+
+export const CONFERENCES = ["SEC", "Big Ten", "Big 12", "ACC"];
+
+export const STATE_NAMES = {
+  AL: "Alabama", AR: "Arkansas", AZ: "Arizona", CA: "California", CO: "Colorado",
+  FL: "Florida", GA: "Georgia", IA: "Iowa", IL: "Illinois", IN: "Indiana",
+  KS: "Kansas", KY: "Kentucky", LA: "Louisiana", MA: "Massachusetts", MD: "Maryland",
+  MI: "Michigan", MN: "Minnesota", MO: "Missouri", MS: "Mississippi", NC: "North Carolina",
+  NE: "Nebraska", NJ: "New Jersey", NY: "New York", OH: "Ohio", OK: "Oklahoma",
+  OR: "Oregon", PA: "Pennsylvania", SC: "South Carolina", TN: "Tennessee", TX: "Texas",
+  UT: "Utah", VA: "Virginia", WA: "Washington", WI: "Wisconsin", WV: "West Virginia",
+};
+
+export const SCHOOLS = [
+  // SEC (16)
+  { school: "Alabama", town: "Tuscaloosa", state: "AL", conference: "SEC" },
+  { school: "Arkansas", town: "Fayetteville", state: "AR", conference: "SEC" },
+  { school: "Auburn", town: "Auburn", state: "AL", conference: "SEC" },
+  { school: "Florida", town: "Gainesville", state: "FL", conference: "SEC" },
+  { school: "Georgia", town: "Athens", state: "GA", conference: "SEC" },
+  { school: "Kentucky", town: "Lexington", state: "KY", conference: "SEC" },
+  { school: "LSU", town: "Baton Rouge", state: "LA", conference: "SEC", schoolAliases: ["Louisiana State"] },
+  { school: "Ole Miss", town: "Oxford", state: "MS", conference: "SEC", schoolAliases: ["Mississippi"] },
+  { school: "Mississippi State", town: "Starkville", state: "MS", conference: "SEC" },
+  { school: "Missouri", town: "Columbia", state: "MO", conference: "SEC", schoolAliases: ["Mizzou"] },
+  { school: "Oklahoma", town: "Norman", state: "OK", conference: "SEC" },
+  { school: "South Carolina", town: "Columbia", state: "SC", conference: "SEC" },
+  { school: "Tennessee", town: "Knoxville", state: "TN", conference: "SEC" },
+  { school: "Texas", town: "Austin", state: "TX", conference: "SEC" },
+  { school: "Texas A&M", town: "College Station", state: "TX", conference: "SEC" },
+  { school: "Vanderbilt", town: "Nashville", state: "TN", conference: "SEC" },
+
+  // Big Ten (18)
+  { school: "Illinois", town: "Champaign", state: "IL", conference: "Big Ten", townAliases: ["Urbana", "Urbana-Champaign", "Champaign-Urbana"] },
+  { school: "Indiana", town: "Bloomington", state: "IN", conference: "Big Ten" },
+  { school: "Iowa", town: "Iowa City", state: "IA", conference: "Big Ten" },
+  { school: "Maryland", town: "College Park", state: "MD", conference: "Big Ten" },
+  { school: "Michigan", town: "Ann Arbor", state: "MI", conference: "Big Ten" },
+  { school: "Michigan State", town: "East Lansing", state: "MI", conference: "Big Ten" },
+  { school: "Minnesota", town: "Minneapolis", state: "MN", conference: "Big Ten" },
+  { school: "Nebraska", town: "Lincoln", state: "NE", conference: "Big Ten" },
+  { school: "Northwestern", town: "Evanston", state: "IL", conference: "Big Ten" },
+  { school: "Ohio State", town: "Columbus", state: "OH", conference: "Big Ten" },
+  { school: "Oregon", town: "Eugene", state: "OR", conference: "Big Ten" },
+  { school: "Penn State", town: "State College", state: "PA", conference: "Big Ten", townAliases: ["University Park"] },
+  { school: "Purdue", town: "West Lafayette", state: "IN", conference: "Big Ten" },
+  { school: "Rutgers", town: "New Brunswick", state: "NJ", conference: "Big Ten", townAliases: ["Piscataway"] },
+  { school: "UCLA", town: "Los Angeles", state: "CA", conference: "Big Ten" },
+  { school: "USC", town: "Los Angeles", state: "CA", conference: "Big Ten", schoolAliases: ["Southern California", "Southern Cal"] },
+  { school: "Washington", town: "Seattle", state: "WA", conference: "Big Ten" },
+  { school: "Wisconsin", town: "Madison", state: "WI", conference: "Big Ten" },
+
+  // Big 12 (16)
+  { school: "Arizona", town: "Tucson", state: "AZ", conference: "Big 12" },
+  { school: "Arizona State", town: "Tempe", state: "AZ", conference: "Big 12" },
+  { school: "Baylor", town: "Waco", state: "TX", conference: "Big 12" },
+  { school: "BYU", town: "Provo", state: "UT", conference: "Big 12", schoolAliases: ["Brigham Young"] },
+  { school: "Cincinnati", town: "Cincinnati", state: "OH", conference: "Big 12" },
+  { school: "Colorado", town: "Boulder", state: "CO", conference: "Big 12" },
+  { school: "Houston", town: "Houston", state: "TX", conference: "Big 12" },
+  { school: "Iowa State", town: "Ames", state: "IA", conference: "Big 12" },
+  { school: "Kansas", town: "Lawrence", state: "KS", conference: "Big 12" },
+  { school: "Kansas State", town: "Manhattan", state: "KS", conference: "Big 12", schoolAliases: ["K-State"] },
+  { school: "Oklahoma State", town: "Stillwater", state: "OK", conference: "Big 12" },
+  { school: "TCU", town: "Fort Worth", state: "TX", conference: "Big 12", schoolAliases: ["Texas Christian"] },
+  { school: "Texas Tech", town: "Lubbock", state: "TX", conference: "Big 12" },
+  { school: "UCF", town: "Orlando", state: "FL", conference: "Big 12", schoolAliases: ["Central Florida"] },
+  { school: "Utah", town: "Salt Lake City", state: "UT", conference: "Big 12" },
+  { school: "West Virginia", town: "Morgantown", state: "WV", conference: "Big 12" },
+
+  // ACC (17 football members; Notre Dame plays other ACC sports but is a football independent)
+  { school: "Boston College", town: "Chestnut Hill", state: "MA", conference: "ACC" },
+  { school: "Cal", town: "Berkeley", state: "CA", conference: "ACC", schoolAliases: ["California", "UC Berkeley"] },
+  { school: "Clemson", town: "Clemson", state: "SC", conference: "ACC" },
+  { school: "Duke", town: "Durham", state: "NC", conference: "ACC" },
+  { school: "Florida State", town: "Tallahassee", state: "FL", conference: "ACC" },
+  { school: "Georgia Tech", town: "Atlanta", state: "GA", conference: "ACC" },
+  { school: "Louisville", town: "Louisville", state: "KY", conference: "ACC" },
+  { school: "Miami", town: "Coral Gables", state: "FL", conference: "ACC", schoolAliases: ["Miami (FL)", "Miami Florida"] },
+  { school: "NC State", town: "Raleigh", state: "NC", conference: "ACC", schoolAliases: ["North Carolina State"] },
+  { school: "North Carolina", town: "Chapel Hill", state: "NC", conference: "ACC", schoolAliases: ["UNC"] },
+  { school: "Pitt", town: "Pittsburgh", state: "PA", conference: "ACC", schoolAliases: ["Pittsburgh"] },
+  { school: "SMU", town: "Dallas", state: "TX", conference: "ACC", townAliases: ["University Park"], schoolAliases: ["Southern Methodist"] },
+  { school: "Stanford", town: "Stanford", state: "CA", conference: "ACC", townAliases: ["Palo Alto"] },
+  { school: "Syracuse", town: "Syracuse", state: "NY", conference: "ACC" },
+  { school: "Virginia", town: "Charlottesville", state: "VA", conference: "ACC", schoolAliases: ["UVA"] },
+  { school: "Virginia Tech", town: "Blacksburg", state: "VA", conference: "ACC" },
+  { school: "Wake Forest", town: "Winston-Salem", state: "NC", conference: "ACC" },
+];
