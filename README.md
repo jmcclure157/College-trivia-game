@@ -7,13 +7,22 @@ Plain HTML, CSS and JavaScript. No build step, no dependencies, nothing is saved
 
 1. Pick a **question type**:
    - **Name the town**: you're shown a school (e.g. *Alabama*) and name its town (*Tuscaloosa*).
-   - **Name the school** (reverse mode): you're shown a town (e.g. *Tuscaloosa, AL*) and name the school.
+   - **Name the school** (reverse mode): you're shown a town (e.g. *Tuscaloosa*) and name the school.
+     When towns are shown without states, Columbia accepts Missouri or South Carolina, and Los Angeles
+     accepts UCLA or USC.
 2. Pick **how to answer**: **multiple choice** (4 options; the wrong ones are mostly from the same
    conference, so they're plausible) or **type the answer**. Typed answers ignore capital letters,
    punctuation and spacing, so `winston salem`, `Winston-Salem` and `Winston-Salem, NC` all count.
    A few well-known alternatives are accepted too (e.g. *Urbana* for Illinois, *Ole Miss* or *Mississippi*).
-3. Choose which **conferences** to include and how many **questions** (10, 25 or all).
-4. After each answer you see right/wrong and the correct answer, plus your score and streak.
+3. **Options**:
+   - **Forgive small typos** (on by default): a typed answer that is a letter or two off still counts,
+     e.g. `Cincinatti`, and the game shows the right spelling. Names under 5 letters (like *TCU*) must
+     be exact, and typing another school's real answer (e.g. *Kansas* for *Arkansas*) is always wrong.
+   - **Show states** (off by default): shows *Tuscaloosa, AL* instead of *Tuscaloosa*. That's easier,
+     because the state usually gives the school away. The state is always shown after you answer.
+4. Choose which **conferences** to include and how many **questions** (10, 25 or all).
+5. After each answer you see right/wrong and the correct answer, plus your score and streak.
+   Get 3 in a row and a flame badge appears; it heats up at 5 and 10 with a burst of sparks.
    The results screen lists every school you missed. **Play again** starts a new shuffled round.
 
 ## Which schools are included

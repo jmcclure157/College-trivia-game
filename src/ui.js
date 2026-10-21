@@ -1,7 +1,7 @@
 // Page code: shows the screens and turns clicks/typing into Quiz calls.
 
 import { CONFERENCES, SCHOOLS } from "./schools.js";
-import { AnswerStyle, Mode, Quiz } from "./quiz.js";
+import { AnswerStyle, Mode, Quiz, correctAnswerText, streakLevel } from "./quiz.js";
 
 const $ = (id) => document.getElementById(id);
 const screens = { setup: $("setup"), game: $("game"), results: $("results") };
@@ -35,6 +35,8 @@ function readSettings(form) {
     style: data.get("style"),
     conferences: data.getAll("conference"),
     count: count === "all" ? null : Number(count),
+    forgiveTypos: data.get("forgiveTypos") === "on",
+    showStates: data.get("showStates") === "on",
   };
 }
 
@@ -49,6 +51,53 @@ function renderStats() {
   $("progress").textContent = `Question ${shown} of ${quiz.total}`;
   $("score").textContent = `Score: ${quiz.score}`;
   $("streak").textContent = `Streak: ${quiz.streak} (best ${quiz.bestStreak})`;
+  renderHeat();
+}
+
+function renderHeat() {
+  const heat = $("heat");
+  const card = screens.game;
+  const level = streakLevel(quiz.streak);
+  card.classList.remove("heat-1", "heat-2", "heat-3");
+  if (!level) {
+    heat.hidden = true;
+    return;
+  }
+  card.classList.add(`heat-${level.level}`);
+  heat.hidden = false;
+  heat.querySelector(".flames").innerHTML = flames(level.level);
+  heat.querySelector(".heat-label").textContent = `${level.label} ${quiz.streak} in a row`;
+}
+
+// Drawn as a small picture instead of an emoji so it looks the same on every computer.
+const FLAME_SVG =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 1.5c.8 3.6-2.6 5.6-2.6 9.1 0 1.6 1.2 2.9 2.6 2.9s2.6-1.2 2.6-2.8c0-1.3-.6-2.3-.9-3.3 2.9 1.6 5.3 4.6 5.3 8.1A7 7 0 0 1 12 22.5a7 7 0 0 1-7-7c0-6.4 7.5-8.2 7-14z"/></svg>';
+
+function flames(count) {
+  return FLAME_SVG.repeat(count);
+}
+
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+// A short burst of rising embers, plus a "pop" on the streak badge.
+function celebrate() {
+  const heat = $("heat");
+  heat.classList.remove("pop");
+  void heat.offsetWidth; // restart the animation
+  heat.classList.add("pop");
+  if (reduceMotion.matches) return;
+  const embers = $("embers");
+  const count = 6 + 3 * streakLevel(quiz.streak).level;
+  for (let i = 0; i < count; i++) {
+    const ember = document.createElement("span");
+    if (i % 3 === 0) ember.innerHTML = FLAME_SVG;
+    else ember.className = "spark";
+    ember.style.left = `${5 + Math.random() * 90}%`;
+    ember.style.animationDelay = `${Math.random() * 0.3}s`;
+    ember.style.setProperty("--size", `${0.6 + Math.random() * 1.2}rem`);
+    ember.addEventListener("animationend", () => ember.remove());
+    embers.append(ember);
+  }
 }
 
 function renderQuestion() {
@@ -106,7 +155,9 @@ function submit(answer, button) {
 
   const feedback = $("feedback");
   feedback.className = `feedback ${result.correct ? "right" : "wrong"}`;
-  feedback.textContent = result.correct ? `Correct! ${result.correctAnswer}.` : `Not quite. The answer is ${result.correctAnswer}.`;
+  if (result.close) feedback.textContent = `Close enough! It's spelled ${result.correctAnswer}.`;
+  else if (result.correct) feedback.textContent = `Correct! ${result.correctAnswer}.`;
+  else feedback.textContent = `Not quite. The answer is ${result.correctAnswer}.`;
 
   if (quiz.style === AnswerStyle.CHOICE) {
     for (const b of $("choices").querySelectorAll("button")) {
@@ -122,6 +173,7 @@ function submit(answer, button) {
   }
 
   renderStats();
+  if (result.milestone) celebrate();
   const next = $("next");
   next.textContent = quiz.index + 1 >= quiz.total ? "See results" : "Next";
   next.hidden = false;
@@ -132,7 +184,8 @@ function renderResults() {
   show("results");
   const pct = quiz.total ? Math.round((quiz.score / quiz.total) * 100) : 0;
   $("final-score").textContent = `You got ${quiz.score} of ${quiz.total} right (${pct}%).`;
-  $("final-streak").textContent = `Best streak: ${quiz.bestStreak}`;
+  const best = streakLevel(quiz.bestStreak);
+  $("final-streak").textContent = `Best streak: ${quiz.bestStreak}${best ? ` (${best.label})` : ""}`;
 
   const list = $("missed");
   list.textContent = "";
@@ -144,7 +197,7 @@ function renderResults() {
     const yours = document.createElement("span");
     yours.className = "given";
     yours.textContent = ` (you said: ${given})`;
-    item.append(strong, ` → ${question.correct.join(" or ")}`, yours);
+    item.append(strong, ` → ${correctAnswerText(question)}`, yours);
     list.append(item);
   }
   $("again").focus();

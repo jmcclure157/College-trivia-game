@@ -46,15 +46,28 @@ export function filterSchools(schools, conferences) {
   return schools.filter((s) => conferences.indexOf(s.conference) !== -1);
 }
 
-// Town mode: one question per school. Reverse mode: one question per town, because two
-// schools (UCLA and USC) share Los Angeles and either is a right answer.
-export function buildQuestions({ mode = Mode.TOWN, schools = SCHOOLS, conferences = [], count = null, rng = Math.random } = {}) {
+// What a town looks like on screen. States are hidden by default because they give the answer away.
+export function townText(school, showStates = false) {
+  return showStates ? townLabel(school) : school.town;
+}
+
+// Town mode: one question per school. Reverse mode: one question per town, because some schools
+// share one (UCLA and USC in Los Angeles; Missouri and South Carolina in Columbia when states are hidden)
+// and any of them is a right answer.
+export function buildQuestions({
+  mode = Mode.TOWN,
+  schools = SCHOOLS,
+  conferences = [],
+  count = null,
+  showStates = false,
+  rng = Math.random,
+} = {}) {
   const selected = filterSchools(schools, conferences);
   let questions;
   if (mode === Mode.SCHOOL) {
     const byTown = new Map();
     for (const s of selected) {
-      const key = townLabel(s);
+      const key = townText(s, showStates);
       if (!byTown.has(key)) byTown.set(key, []);
       byTown.get(key).push(s);
     }
@@ -65,20 +78,20 @@ export function buildQuestions({ mode = Mode.TOWN, schools = SCHOOLS, conference
       correct: group.map((s) => s.school),
     }));
   } else {
-    questions = selected.map((s) => ({ mode, prompt: s.school, schools: [s], correct: [townLabel(s)] }));
+    questions = selected.map((s) => ({ mode, prompt: s.school, schools: [s], correct: [townText(s, showStates)] }));
   }
   questions = shuffle(questions, rng);
   return count ? questions.slice(0, count) : questions;
 }
 
-function answerLabel(mode, school) {
-  return mode === Mode.SCHOOL ? school.school : townLabel(school);
+function answerLabel(mode, school, showStates) {
+  return mode === Mode.SCHOOL ? school.school : townText(school, showStates);
 }
 
 // Wrong options come from the same conference first, then from the rest of `pool`.
-export function makeChoices(question, { pool = SCHOOLS, rng = Math.random, count = CHOICE_COUNT } = {}) {
+export function makeChoices(question, { pool = SCHOOLS, rng = Math.random, count = CHOICE_COUNT, showStates = false } = {}) {
   const conferences = question.schools.map((s) => s.conference);
-  const isRight = (s) => question.correct.indexOf(answerLabel(question.mode, s)) !== -1 || question.schools.indexOf(s) !== -1;
+  const isRight = (s) => question.correct.indexOf(answerLabel(question.mode, s, showStates)) !== -1 || question.schools.indexOf(s) !== -1;
   const others = pool.filter((s) => !isRight(s));
   const near = shuffle(others.filter((s) => conferences.indexOf(s.conference) !== -1), rng);
   const far = shuffle(others.filter((s) => conferences.indexOf(s.conference) === -1), rng);
@@ -86,43 +99,173 @@ export function makeChoices(question, { pool = SCHOOLS, rng = Math.random, count
   const wrong = [];
   for (const s of near.concat(far)) {
     if (wrong.length >= count - 1) break;
-    const label = answerLabel(question.mode, s);
+    const label = answerLabel(question.mode, s, showStates);
     if (wrong.indexOf(label) === -1) wrong.push(label);
   }
   const right = question.correct[Math.floor(rng() * question.correct.length)];
   return shuffle([right].concat(wrong), rng);
 }
 
+function answerForms(mode, school, { withStates = true } = {}) {
+  if (mode === Mode.SCHOOL) return [school.school].concat(school.schoolAliases || []);
+  const forms = [];
+  for (const town of [school.town].concat(school.townAliases || [])) {
+    forms.push(town);
+    if (withStates) forms.push(`${town} ${school.state}`, `${town} ${STATE_NAMES[school.state]}`);
+  }
+  return forms;
+}
+
+// States with no Power 4 school, so a typed wrong state like "NV" is still recognized as a state.
+const OTHER_STATES = {
+  AK: "Alaska", CT: "Connecticut", DE: "Delaware", HI: "Hawaii", ID: "Idaho",
+  ME: "Maine", MT: "Montana", NV: "Nevada", NH: "New Hampshire", NM: "New Mexico",
+  ND: "North Dakota", RI: "Rhode Island", SD: "South Dakota", VT: "Vermont", WY: "Wyoming",
+};
+
+const STATE_WORDS = new Map();
+for (const [code, name] of Object.entries({ ...STATE_NAMES, ...OTHER_STATES })) {
+  STATE_WORDS.set(code.toLowerCase(), code);
+  STATE_WORDS.set(name.toLowerCase(), code);
+}
+
+// Splits a typed town answer like "Winston Salem, NC" into its town ("winstonsalem") and state ("NC").
+export function splitState(answer) {
+  const words = String(answer)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .split(" ");
+  for (const size of [2, 1]) {
+    if (words.length <= size) continue;
+    const state = STATE_WORDS.get(words.slice(-size).join(" "));
+    if (state) return { town: normalize(words.slice(0, -size).join(" ")), state };
+  }
+  return { town: normalize(answer), state: null };
+}
+
 export function acceptedAnswers(question) {
   const forms = [];
-  for (const s of question.schools) {
-    if (question.mode === Mode.SCHOOL) {
-      forms.push(s.school, ...(s.schoolAliases || []));
-    } else {
-      for (const town of [s.town].concat(s.townAliases || [])) {
-        forms.push(town, `${town} ${s.state}`, `${town} ${STATE_NAMES[s.state]}`);
-      }
-    }
-  }
+  for (const s of question.schools) forms.push(...answerForms(question.mode, s));
   return forms.map(normalize);
 }
 
-export function isCorrect(question, answer) {
-  const given = normalize(answer);
-  return given !== "" && acceptedAnswers(question).indexOf(given) !== -1;
+// Number of single-letter edits (add, remove, swap in another letter, or flip two neighbors)
+// needed to turn one word into the other: "cincinatti" -> "cincinnati" is 2.
+export function editDistance(a, b) {
+  const d = [];
+  for (let i = 0; i <= a.length; i++) d.push([i]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost);
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) {
+        d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+      }
+    }
+  }
+  return d[a.length][b.length];
 }
 
+// Short names must be exact ("TCU"); longer names allow one or two slips.
+export function typoAllowance(length) {
+  if (length < 5) return 0;
+  if (length < 8) return 1;
+  return 2;
+}
+
+function closestDistance(given, forms) {
+  let best = Infinity;
+  for (const form of forms) {
+    const dist = editDistance(given, form);
+    if (dist <= typoAllowance(form.length) && dist < best) best = dist;
+  }
+  return best;
+}
+
+// "exact" for a right answer, "close" for a small misspelling of a right answer, otherwise null.
+// A typo only counts when it is closer to a right answer than to any other school's answer,
+// and typing another school's real answer is always wrong.
+export function matchAnswer(question, answer, { forgiveTypos = true, pool = SCHOOLS } = {}) {
+  const given = normalize(answer);
+  if (given === "") return null;
+  const accepted = acceptedAnswers(question);
+  if (accepted.indexOf(given) !== -1) return "exact";
+  if (!forgiveTypos) return null;
+
+  const otherSchools = pool.filter((s) => question.schools.indexOf(s) === -1);
+  const othersFor = (options) => {
+    const out = [];
+    for (const s of otherSchools) {
+      for (const form of answerForms(question.mode, s, options)) {
+        const n = normalize(form);
+        if (accepted.indexOf(n) === -1) out.push(n);
+      }
+    }
+    return out;
+  };
+  if (othersFor().indexOf(given) !== -1) return null;
+
+  // Town typos are judged on the town alone; a state, if typed, must be right.
+  let guess = given;
+  let rightForms = accepted;
+  let otherForms = othersFor();
+  if (question.mode === Mode.TOWN) {
+    const { town, state } = splitState(answer);
+    if (state && !question.schools.some((s) => s.state === state)) return null;
+    guess = town;
+    rightForms = [];
+    for (const s of question.schools) rightForms.push(...answerForms(Mode.TOWN, s, { withStates: false }).map(normalize));
+    otherForms = othersFor({ withStates: false });
+  }
+  const right = closestDistance(guess, rightForms);
+  return right !== Infinity && right < closestDistance(guess, otherForms) ? "close" : null;
+}
+
+export function isCorrect(question, answer, options) {
+  return matchAnswer(question, answer, options) !== null;
+}
+
+// Badge shown while the player is on a run of right answers.
+export function streakLevel(streak) {
+  if (streak >= 10) return { level: 3, label: "Unstoppable!" };
+  if (streak >= 5) return { level: 2, label: "On fire!" };
+  if (streak >= 3) return { level: 1, label: "Heating up!" };
+  return null;
+}
+
+// Streaks worth a celebration: 3, 5, 10, then every 5 after that.
+export function isStreakMilestone(streak) {
+  return streak === 3 || streak === 5 || (streak >= 10 && streak % 5 === 0);
+}
+
+// The full answer shown after each question, always with the state so the player learns it.
 export function correctAnswerText(question) {
-  return question.correct.join(" or ");
+  const labels = question.schools.map((s) => (question.mode === Mode.SCHOOL ? s.school : townLabel(s)));
+  return labels.join(" or ");
 }
 
 export class Quiz {
-  constructor({ mode = Mode.TOWN, style = AnswerStyle.CHOICE, conferences = [], count = null, schools = SCHOOLS, rng = Math.random } = {}) {
+  constructor({
+    mode = Mode.TOWN,
+    style = AnswerStyle.CHOICE,
+    conferences = [],
+    count = null,
+    forgiveTypos = true,
+    showStates = false,
+    schools = SCHOOLS,
+    rng = Math.random,
+  } = {}) {
     this.mode = mode;
     this.style = style;
-    this.questions = buildQuestions({ mode, schools, conferences, count, rng });
+    this.forgiveTypos = forgiveTypos;
+    this.pool = schools;
+    this.questions = buildQuestions({ mode, schools, conferences, count, showStates, rng });
     if (style === AnswerStyle.CHOICE) {
-      for (const q of this.questions) q.choices = makeChoices(q, { pool: schools, rng });
+      for (const q of this.questions) q.choices = makeChoices(q, { pool: schools, rng, showStates });
     }
     this.index = 0;
     this.score = 0;
@@ -148,7 +291,8 @@ export class Quiz {
     if (this.finished) throw new Error("The quiz is over.");
     if (this.answered) throw new Error("This question was already answered.");
     const question = this.current;
-    const correct = isCorrect(question, input);
+    const match = matchAnswer(question, input, { forgiveTypos: this.forgiveTypos, pool: this.pool });
+    const correct = match !== null;
     this.answered = true;
     if (correct) {
       this.score++;
@@ -158,7 +302,12 @@ export class Quiz {
       this.streak = 0;
       this.missed.push({ question, given: String(input) });
     }
-    return { correct, correctAnswer: correctAnswerText(question) };
+    return {
+      correct,
+      close: match === "close",
+      correctAnswer: correctAnswerText(question),
+      milestone: correct && isStreakMilestone(this.streak),
+    };
   }
 
   next() {
