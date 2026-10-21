@@ -85,9 +85,10 @@ export function makeChoices(question, { pool = SCHOOLS, rng = Math.random, count
 
   const wrong = [];
   for (const s of near.concat(far)) {
+    if (wrong.length >= count - 1) break;
     const label = answerLabel(question.mode, s);
     if (wrong.indexOf(label) === -1) wrong.push(label);
-    if (wrong.length === count - 1) break;
+  }
   }
   const right = question.correct[Math.floor(rng() * question.correct.length)];
   return shuffle([right].concat(wrong), rng);
