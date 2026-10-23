@@ -3,8 +3,6 @@ import assert from "node:assert/strict";
 
 import { SCHOOLS } from "../src/schools.js";
 import {
-  AnswerStyle,
-  CHOICE_COUNT,
   Mode,
   Quiz,
   buildQuestions,
@@ -13,7 +11,6 @@ import {
   editDistance,
   isCorrect,
   isStreakMilestone,
-  makeChoices,
   matchAnswer,
   normalize,
   shuffle,
@@ -96,10 +93,8 @@ test("reverse mode asks about Los Angeles once and accepts UCLA or USC", () => {
 test("states are hidden by default and shown when asked for", () => {
   const [town] = buildQuestions({ schools: [byName("Alabama")] });
   assert.deepEqual(town.correct, ["Tuscaloosa"]);
-  assert.ok(makeChoices(town, { rng: seeded(1) }).every((c) => !c.includes(",")));
   const [shown] = buildQuestions({ schools: [byName("Alabama")], showStates: true });
   assert.deepEqual(shown.correct, ["Tuscaloosa, AL"]);
-  assert.ok(makeChoices(shown, { rng: seeded(1), showStates: true }).every((c) => c.includes(", ")));
   const [reverse] = buildQuestions({ mode: Mode.SCHOOL, schools: [byName("Alabama")], showStates: true });
   assert.equal(reverse.prompt, "Tuscaloosa, AL");
 });
@@ -109,21 +104,8 @@ test("without states, reverse mode asks about Columbia once and accepts Missouri
   assert.equal(columbia.length, 1);
   assert.ok(isCorrect(columbia[0], "Missouri"));
   assert.ok(isCorrect(columbia[0], "South Carolina"));
-  for (let seed = 1; seed <= 30; seed++) {
-    const choices = makeChoices(columbia[0], { rng: seeded(seed) });
-    assert.equal(choices.filter((c) => c === "Missouri" || c === "South Carolina").length, 1);
-  }
   const withStates = buildQuestions({ mode: Mode.SCHOOL, showStates: true });
   assert.equal(withStates.filter((q) => q.prompt.startsWith("Columbia,")).length, 2);
-});
-
-test("in town mode, the Missouri question never offers South Carolina's Columbia as a wrong answer", () => {
-  const [q] = buildQuestions({ schools: [byName("Missouri")] });
-  for (let seed = 1; seed <= 30; seed++) {
-    const choices = makeChoices(q, { rng: seeded(seed) });
-    assert.equal(choices.length, CHOICE_COUNT);
-    assert.equal(choices.filter((c) => c === "Columbia").length, 1);
-  }
 });
 
 test("editDistance counts single-letter edits, with swapped neighbors as one", () => {
@@ -179,52 +161,12 @@ test("conference filter and question count", () => {
   assert.equal(buildQuestions({ conferences: ["ACC", "Big 12"] }).length, 33);
 });
 
-test("choices: four distinct options, one right answer, wrong ones from the same conference", () => {
-  for (let seed = 1; seed <= 25; seed++) {
-    for (const q of buildQuestions({ rng: seeded(seed) })) {
-      const choices = makeChoices(q, { rng: seeded(seed) });
-      assert.equal(choices.length, CHOICE_COUNT);
-      assert.equal(new Set(choices).size, CHOICE_COUNT, choices.join(" | "));
-      assert.equal(choices.filter((c) => q.correct.includes(c)).length, 1);
-      const conf = q.schools[0].conference;
-      for (const c of choices.filter((c) => !q.correct.includes(c))) {
-        assert.ok(SCHOOLS.some((s) => townText(s) === c && s.conference === conf), `${c} not in ${conf}`);
-      }
-    }
-  }
-});
-
-test("choices in reverse mode never offer a second right answer", () => {
-  const [la] = buildQuestions({ mode: Mode.SCHOOL, schools: [byName("UCLA"), byName("USC")] });
-  for (let seed = 1; seed <= 50; seed++) {
-    const choices = makeChoices(la, { rng: seeded(seed) });
-    assert.equal(choices.filter((c) => c === "UCLA" || c === "USC").length, 1);
-  }
-});
-
-test("choices honor smaller option counts, including a single option", () => {
-  const q = townQuestion("Alabama");
-  assert.deepEqual(makeChoices(q, { count: 1, rng: seeded(1) }), ["Tuscaloosa"]);
-  assert.equal(makeChoices(q, { count: 2, rng: seeded(1) }).length, 2);
-});
-
-test("choices fall back to other conferences when the pool is small", () => {
-  const pool = [byName("Alabama"), byName("Auburn"), byName("Ohio State"), byName("Utah"), byName("Duke")];
-  const choices = makeChoices(townQuestion("Alabama"), { pool, rng: seeded(4) });
-  assert.equal(choices.length, 4);
-  assert.ok(choices.includes("Tuscaloosa"));
-  assert.ok(choices.includes("Auburn"));
-});
-
 test("mascot mode: shown a school, name its mascot, with short forms and typos", () => {
   const [q] = buildQuestions({ mode: Mode.MASCOT, schools: [byName("Tennessee")] });
   assert.equal(q.prompt, "Tennessee");
   assert.deepEqual(q.correct, ["Volunteers"]);
   for (const ok of ["volunteers", "Vols", "Tennessee Volunteers", "Volunters"]) assert.ok(isCorrect(q, ok), ok);
   assert.ok(!isCorrect(q, "Commodores"));
-  const choices = makeChoices(q, { rng: seeded(2) });
-  assert.equal(choices.length, CHOICE_COUNT);
-  assert.ok(choices.includes("Volunteers"));
 });
 
 test("mascot mode never accepts a different school's similar nickname", () => {
@@ -246,11 +188,6 @@ test("reverse mascot mode asks about shared nicknames once and accepts any of th
   assert.equal(closestAnswerText(vols, "Tennesee Volunteers"), "Tennessee Volunteers");
   assert.equal(closestAnswerText(vols, "Volunters"), "Volunteers");
   assert.equal(closestAnswerText(townQuestion("Iowa"), "Iowa Ciyt"), "Iowa City, IA");
-  for (let seed = 1; seed <= 30; seed++) {
-    const choices = makeChoices(tigers, { rng: seeded(seed) });
-    assert.equal(choices.length, CHOICE_COUNT);
-    assert.equal(choices.filter((c) => tigers.correct.includes(c)).length, 1);
-  }
   const [tide] = buildQuestions({ mode: Mode.MASCOT_SCHOOL, schools: [byName("Alabama")] });
   assert.equal(tide.prompt, "Crimson Tide");
   assert.ok(isCorrect(tide, "alabama"));
@@ -276,7 +213,7 @@ test("Quiz tracks score, streak, best streak and misses", () => {
 });
 
 test("Quiz reports close answers and streak milestones", () => {
-  const quiz = new Quiz({ style: AnswerStyle.TYPED, schools: [byName("Cincinnati"), byName("Alabama"), byName("Auburn")], rng: seeded(3) });
+  const quiz = new Quiz({ schools: [byName("Cincinnati"), byName("Alabama"), byName("Auburn")], rng: seeded(3) });
   const typo = { Cincinnati: "Cincinatti", Alabama: "Tuscalosa", Auburn: "Auburn" };
   const results = [];
   while (!quiz.finished) {
@@ -287,16 +224,8 @@ test("Quiz reports close answers and streak milestones", () => {
   assert.deepEqual(results.map((r) => r.milestone), [false, false, true]);
   assert.equal(results.filter((r) => r.close).length, 2);
 
-  const strict = new Quiz({ style: AnswerStyle.TYPED, schools: [byName("Cincinnati")], forgiveTypos: false });
+  const strict = new Quiz({ schools: [byName("Cincinnati")], forgiveTypos: false });
   assert.equal(strict.answer("Cincinatti").correct, false);
-});
-
-test("Quiz in multiple-choice mode gives every question choices that include the answer", () => {
-  const quiz = new Quiz({ style: AnswerStyle.CHOICE, rng: seeded(11) });
-  assert.equal(quiz.total, SCHOOLS.length);
-  for (const q of quiz.questions) assert.ok(q.choices.includes(q.correct[0]));
-  const q = quiz.current;
-  assert.ok(quiz.answer(q.correct[0]).correct);
 });
 
 test("Quiz refuses double answers and skipping ahead", () => {

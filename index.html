@@ -8,77 +8,134 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <main>
+    <header class="hero">
+      <svg class="ball" viewBox="0 0 64 40" aria-hidden="true">
+        <ellipse cx="32" cy="20" rx="30" ry="17" fill="#8a4b22" />
+        <path d="M10 9c3 7 3 15 0 22M54 9c-3 7-3 15 0 22" stroke="#fff" stroke-width="2.5" fill="none" />
+        <path d="M20 20h24M24 16v8M28 16v8M32 16v8M36 16v8M40 16v8" stroke="#fff" stroke-width="2.5" stroke-linecap="round" />
+      </svg>
       <h1>College Town Trivia</h1>
       <p class="subtitle">Where does every Power 4 football school call home?</p>
+    </header>
 
+    <main>
       <section id="setup" class="card">
         <form id="setup-form">
-          <fieldset>
-            <legend>Question type</legend>
-            <label><input type="radio" name="mode" value="town" checked /> Name the town (shown a school)</label>
-            <label><input type="radio" name="mode" value="school" /> Name the school (shown a town)</label>
-            <label><input type="radio" name="mode" value="mascot" /> Name the mascot (shown a school)</label>
-            <label><input type="radio" name="mode" value="mascot-school" /> Name the school (shown a mascot)</label>
-          </fieldset>
-          <fieldset>
-            <legend>How to answer</legend>
-            <label><input type="radio" name="style" value="choice" checked /> Multiple choice</label>
-            <label><input type="radio" name="style" value="typed" /> Type the answer</label>
-          </fieldset>
-          <fieldset>
-            <legend>Options</legend>
-            <label><input type="checkbox" name="forgiveTypos" checked /> Forgive small typos when typing</label>
-            <label><input type="checkbox" name="showStates" /> Show states (easier)</label>
-          </fieldset>
-          <fieldset>
-            <legend>Conferences</legend>
-            <div id="conferences" class="conferences"></div>
-          </fieldset>
-          <label class="count">
-            Questions
-            <select name="count">
-              <option value="10">10</option>
-              <option value="25">25</option>
-              <option value="all" selected>All</option>
-            </select>
-          </label>
+          <h2 class="step"><span>1</span> Pick a question type</h2>
+          <div class="modes">
+            <label class="mode">
+              <input type="radio" name="mode" value="town" checked />
+              <span class="mode-body">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" /></svg>
+                <strong>Name the town</strong>
+                <small>Alabama → Tuscaloosa</small>
+              </span>
+            </label>
+            <label class="mode">
+              <input type="radio" name="mode" value="school" />
+              <span class="mode-body">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 2 7v2h20V7L12 2zM4 11v7h3v-7H4zm6.5 0v7h3v-7h-3zM17 11v7h3v-7h-3zM2 20v2h20v-2H2z" /></svg>
+                <strong>Name the school</strong>
+                <small>Tuscaloosa → Alabama</small>
+              </span>
+            </label>
+            <label class="mode">
+              <input type="radio" name="mode" value="mascot" />
+              <span class="mode-body">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 3 6.5 7 .8-5.2 4.8 1.4 7L12 17.6 5.8 21.1l1.4-7L2 9.3l7-.8L12 2z" /></svg>
+                <strong>Name the mascot</strong>
+                <small>Alabama → Crimson Tide</small>
+              </span>
+            </label>
+            <label class="mode">
+              <input type="radio" name="mode" value="mascot-school" />
+              <span class="mode-body">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3 1.4-1.4L21.8 8l-5.4 5.4L15 12l3-3H7V7zm10 10H6l3 3-1.4 1.4L2.2 16l5.4-5.4L9 12l-3 3h11v2z" /></svg>
+                <strong>School from mascot</strong>
+                <small>Crimson Tide → Alabama</small>
+              </span>
+            </label>
+          </div>
+
+          <h2 class="step"><span>2</span> Choose conferences</h2>
+          <div id="conferences" class="pills"></div>
+
+          <h2 class="step"><span>3</span> Round length</h2>
+          <div class="segmented">
+            <label><input type="radio" name="count" value="10" /><span>10</span></label>
+            <label><input type="radio" name="count" value="25" /><span>25</span></label>
+            <label><input type="radio" name="count" value="all" checked /><span>All</span></label>
+          </div>
+
+          <div class="toggles">
+            <label class="switch">
+              <input type="checkbox" name="forgiveTypos" checked />
+              <span class="track" aria-hidden="true"></span>
+              <span>Forgive small typos</span>
+            </label>
+            <label class="switch">
+              <input type="checkbox" name="showStates" />
+              <span class="track" aria-hidden="true"></span>
+              <span>Show states (easier)</span>
+            </label>
+          </div>
+
           <p id="setup-error" class="error" role="alert"></p>
-          <button type="submit" class="primary">Start</button>
+          <button type="submit" class="primary big">Start game</button>
         </form>
       </section>
 
       <section id="game" class="card" hidden>
+        <div class="topbar">
+          <span id="progress" class="progress-text"></span>
+          <button id="quit" type="button" class="link">Quit</button>
+        </div>
+        <div class="bar" aria-hidden="true"><div id="bar-fill" class="bar-fill"></div></div>
         <div class="stats">
-          <span id="progress"></span>
-          <span id="score"></span>
-          <span id="streak"></span>
+          <span class="stat"><small>Score</small><b id="score"></b></span>
+          <span class="stat"><small>Streak</small><b id="streak"></b></span>
+          <span class="stat"><small>Best</small><b id="best"></b></span>
         </div>
         <div id="heat" class="heat" aria-live="polite" hidden>
           <span class="flames" aria-hidden="true"></span>
           <span class="heat-label"></span>
         </div>
         <div id="embers" class="embers" aria-hidden="true"></div>
-        <p id="conference" class="tag"></p>
-        <h2 id="prompt" class="prompt"></h2>
-        <div id="choices" class="choices"></div>
-        <form id="typed" class="typed" hidden>
+
+        <div class="question">
+          <p id="conference" class="tag"></p>
+          <p id="ask" class="ask"></p>
+          <h2 id="prompt" class="prompt"></h2>
+        </div>
+
+        <form id="typed" class="typed">
           <input id="typed-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Your answer" />
-          <button type="submit" class="primary">Submit</button>
+          <button type="submit" class="primary">Answer</button>
         </form>
-        <p id="feedback" class="feedback" aria-live="polite"></p>
-        <button id="next" type="button" class="primary" hidden>Next</button>
+        <div id="feedback" class="feedback" aria-live="polite" hidden>
+          <span class="fb-icon" aria-hidden="true"></span>
+          <div>
+            <p class="fb-title"></p>
+            <p class="fb-detail"></p>
+          </div>
+        </div>
+        <button id="next" type="button" class="primary big" hidden>Next</button>
       </section>
 
       <section id="results" class="card" hidden>
-        <h2>Results</h2>
-        <p id="final-score" class="final-score"></p>
-        <p id="final-streak"></p>
-        <h3 id="missed-title"></h3>
+        <div class="summary">
+          <div id="ring" class="ring"><span id="pct"></span></div>
+          <div>
+            <p id="rank" class="rank"></p>
+            <p id="final-score" class="final-score"></p>
+            <p id="final-streak" class="final-streak"></p>
+          </div>
+        </div>
+        <h3 id="missed-title" class="missed-title"></h3>
         <ul id="missed" class="missed"></ul>
         <div class="controls">
-          <button id="again" type="button" class="primary">Play again</button>
-          <button id="settings" type="button">Change settings</button>
+          <button id="again" type="button" class="primary big">Play again</button>
+          <button id="settings" type="button" class="secondary big">Change settings</button>
         </div>
       </section>
     </main>

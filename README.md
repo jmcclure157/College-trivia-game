@@ -15,20 +15,19 @@ Plain HTML, CSS and JavaScript. No build step, no dependencies, nothing is saved
      Shared nicknames are asked once and accept any of their schools: *Tigers* (Auburn, LSU, Missouri,
      Clemson), *Wildcats* (Kentucky, Northwestern, Arizona, Kansas State), *Bulldogs* (Georgia,
      Mississippi State) and *Cougars* (BYU, Houston). Common short forms count too (*Vols*, *Terps*, *Huskers*).
-2. Pick **how to answer**: **multiple choice** (4 options; the wrong ones are mostly from the same
-   conference, so they're plausible) or **type the answer**. Typed answers ignore capital letters,
-   punctuation and spacing, so `winston salem`, `Winston-Salem` and `Winston-Salem, NC` all count.
-   A few well-known alternatives are accepted too (e.g. *Urbana* for Illinois, *Ole Miss* or *Mississippi*).
+2. **Type your answer.** Answers ignore capital letters, punctuation and spacing, so `winston salem`,
+   `Winston-Salem` and `Winston-Salem, NC` all count. A few well-known alternatives are accepted too
+   (e.g. *Urbana* for Illinois, *Ole Miss* or *Mississippi*).
 3. **Options**:
    - **Forgive small typos** (on by default): a typed answer that is a letter or two off still counts,
      e.g. `Cincinatti`, and the game shows the right spelling. Names under 5 letters (like *TCU*) must
      be exact, and typing another school's real answer (e.g. *Kansas* for *Arkansas*) is always wrong.
    - **Show states** (off by default): shows *Tuscaloosa, AL* instead of *Tuscaloosa*. That's easier,
      because the state usually gives the school away. The state is always shown after you answer.
-4. Choose which **conferences** to include and how many **questions** (10, 25 or all).
+4. Tap the **conferences** to include and pick a **round length** (10, 25 or all questions).
 5. After each answer you see right/wrong and the correct answer, plus your score and streak.
    Get 3 in a row and a flame badge appears; it heats up at 5 and 10 with a burst of sparks.
-   The results screen lists every school you missed. **Play again** starts a new shuffled round.
+   The results screen shows your score as a percentage ring and lists every question you missed. **Play again** starts a new shuffled round.
 
 ## Which schools are included
 
@@ -43,7 +42,7 @@ plays football as an independent, so it is left out. The town is the city the ma
 index.html          the page: setup screen, question screen, results screen
 style.css           look and layout
 src/schools.js      the data: { school, town, state, conference, mascot } for every school
-src/quiz.js         the game rules (no page code): questions, choices, answer matching, scoring
+src/quiz.js         the game rules (no page code): questions, answer matching, scoring
 src/ui.js           page code: draws each screen and passes clicks/typing to quiz.js
 test/               tests for the data and the rules
 .github/workflows/  ci.yml runs the tests; pages.yml publishes the game to GitHub Pages
