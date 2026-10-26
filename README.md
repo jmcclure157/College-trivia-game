@@ -29,6 +29,9 @@ Plain HTML, CSS and JavaScript. No build step, no dependencies, nothing is saved
 5. The result of each answer (right/wrong and the correct answer) shows above the next question, with your score and streak.
    Get 3 in a row and a flame badge appears; it heats up at 5 and 10 with a burst of sparks.
    The results screen shows your score as a percentage ring and lists every question you missed. **Play again** starts a new shuffled round.
+6. **Team colors**: each question paints the page in that school's two official colors (e.g. Iowa turns black
+   and gold). Questions whose answer is a school (*Name the school*, *School from mascot*) stay navy and gold,
+   so the colors never give the answer away.
 
 ## Which schools are included
 
@@ -42,8 +45,9 @@ plays football as an independent, so it is left out. The town is the city the ma
 ```
 index.html          the page: setup screen, question screen, results screen
 style.css           look and layout
-src/schools.js      the data: { school, town, state, conference, mascot } for every school
+src/schools.js      the data: { school, town, state, conference, mascot, colors } for every school
 src/quiz.js         the game rules (no page code): questions, answer matching, scoring
+src/theme.js        team colors: which school's colors to show, readable text colors
 src/ui.js           page code: draws each screen and passes clicks/typing to quiz.js
 test/               tests for the data and the rules
 .github/workflows/  ci.yml runs the tests; pages.yml publishes the game to GitHub Pages
