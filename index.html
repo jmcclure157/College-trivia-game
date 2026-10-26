@@ -102,6 +102,14 @@
         </div>
         <div id="embers" class="embers" aria-hidden="true"></div>
 
+        <div id="feedback" class="feedback" aria-hidden="true" hidden>
+          <span class="fb-icon" aria-hidden="true"></span>
+          <div>
+            <p class="fb-label">Last question</p>
+            <p class="fb-title"></p>
+            <p class="fb-detail"></p>
+          </div>
+        </div>
         <div class="question">
           <p id="conference" class="tag"></p>
           <p id="ask" class="ask"></p>
@@ -112,18 +120,18 @@
           <input id="typed-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Your answer" />
           <button type="submit" class="primary">Answer</button>
         </form>
-        <div id="feedback" class="feedback" aria-hidden="true" hidden>
+        <p id="announce" class="sr-only" aria-live="polite"></p>
+      </section>
+
+      <section id="results" class="card" hidden>
+        <div id="final-feedback" class="feedback" aria-hidden="true" hidden>
           <span class="fb-icon" aria-hidden="true"></span>
           <div>
+            <p class="fb-label">Last question</p>
             <p class="fb-title"></p>
             <p class="fb-detail"></p>
           </div>
         </div>
-        <p id="announce" class="sr-only" aria-live="polite"></p>
-        <button id="next" type="button" class="primary big" hidden>Next</button>
-      </section>
-
-      <section id="results" class="card" hidden>
         <div class="summary">
           <div id="ring" class="ring"><span id="pct"></span></div>
           <div>

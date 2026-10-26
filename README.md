@@ -17,7 +17,8 @@ Plain HTML, CSS and JavaScript. No build step, no dependencies, nothing is saved
      Mississippi State) and *Cougars* (BYU, Houston). Common short forms count too (*Vols*, *Terps*, *Huskers*).
 2. **Type your answer.** Answers ignore capital letters, punctuation and spacing, so `winston salem`,
    `Winston-Salem` and `Winston-Salem, NC` all count. A few well-known alternatives are accepted too
-   (e.g. *Urbana* for Illinois, *Ole Miss* or *Mississippi*).
+   (e.g. *Urbana* for Illinois, *Ole Miss* or *Mississippi*). For mascots, singular or plural both count
+   (`Wildcat` or `Wildcats`). Pressing Enter answers and goes straight to the next question.
 3. **Options**:
    - **Forgive small typos** (on by default): a typed answer that is a letter or two off still counts,
      e.g. `Cincinatti`, and the game shows the right spelling. Names under 5 letters (like *TCU*) must
@@ -25,7 +26,7 @@ Plain HTML, CSS and JavaScript. No build step, no dependencies, nothing is saved
    - **Show states** (off by default): shows *Tuscaloosa, AL* instead of *Tuscaloosa*. That's easier,
      because the state usually gives the school away. The state is always shown after you answer.
 4. Tap the **conferences** to include and pick a **round length** (10, 25 or all questions).
-5. After each answer you see right/wrong and the correct answer, plus your score and streak.
+5. The result of each answer (right/wrong and the correct answer) shows above the next question, with your score and streak.
    Get 3 in a row and a flame badge appears; it heats up at 5 and 10 with a burst of sparks.
    The results screen shows your score as a percentage ring and lists every question you missed. **Play again** starts a new shuffled round.
 

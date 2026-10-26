@@ -139,56 +139,53 @@ function renderQuestion() {
 
   $("feedback").hidden = true;
   $("announce").textContent = "";
-  $("next").hidden = true;
 
-  const typed = $("typed");
   const input = $("typed-input");
   input.value = "";
-  input.disabled = false;
-  input.className = "";
   input.placeholder = PLACEHOLDER[q.mode] || "Type the school";
-  typed.querySelector("button").disabled = false;
   input.focus();
 }
 
-function submit(answer) {
-  if (quiz.answered) return;
-  const result = quiz.answer(answer);
-  const q = quiz.current;
-
-  const feedback = $("feedback");
+function showFeedback(feedback, q, answer, result) {
   const kind = result.correct ? "right" : "wrong";
-  feedback.className = `feedback ${kind}`;
-  feedback.querySelector(".fb-icon").innerHTML = ICONS[kind];
   let title;
   let detail;
   if (result.close) {
     const others = q.schools.length > 1 ? ` (${q.schools.map((s) => s.school).join(", ")} all count.)` : "";
     title = "Close enough!";
-    detail = `It's spelled ${result.spelling}.${others}`;
+    detail = `${q.prompt}: it's spelled ${result.spelling}.${others}`;
   } else if (result.correct) {
     title = "Correct!";
-    detail = `${result.correctAnswer}.`;
+    detail = `${q.prompt}: ${result.correctAnswer}.`;
   } else {
-    title = "Not quite";
-    detail = `The answer is ${result.correctAnswer}.`;
+    title = "Not quite.";
+    detail = `${q.prompt}: ${result.correctAnswer}. You said "${answer}".`;
   }
+  feedback.className = "feedback";
+  void feedback.offsetWidth; // restart the slide-in animation
+  feedback.className = `feedback ${kind}`;
+  feedback.querySelector(".fb-icon").innerHTML = ICONS[kind];
   feedback.querySelector(".fb-title").textContent = title;
   feedback.querySelector(".fb-detail").textContent = detail;
   feedback.hidden = false;
-  $("announce").textContent = `${/[.!]$/.test(title) ? title : `${title}.`} ${detail}`;
+  return `${title} ${detail}`;
+}
 
-  const input = $("typed-input");
-  input.disabled = true;
-  input.className = kind;
-  $("typed").querySelector("button").disabled = true;
-
-  renderStats();
+// One Enter both answers and moves on; the result stays on screen above the next question.
+function submit(answer) {
+  if (quiz.answered) return;
+  const q = quiz.current;
+  const result = quiz.answer(answer);
+  quiz.next();
+  renderQuestion();
+  if (quiz.finished) {
+    const said = showFeedback($("final-feedback"), q, answer, result);
+    $("announce").textContent = `${said} Round over. ${$("final-score").textContent}`;
+    return;
+  }
+  const said = showFeedback($("feedback"), q, answer, result);
+  $("announce").textContent = `${said} Next: ${$("ask").textContent} ${$("prompt").textContent}`;
   if (result.milestone) celebrate();
-  const next = $("next");
-  next.textContent = quiz.index + 1 >= quiz.total ? "See results" : "Next question";
-  next.hidden = false;
-  next.focus();
 }
 
 function rankFor(pct) {
@@ -225,7 +222,8 @@ function renderResults() {
     item.append(prompt, answer, yours);
     list.append(item);
   }
-  $("again").focus();
+  window.scrollTo(0, 0);
+  $("again").focus({ preventScroll: true });
 }
 
 buildConferencePills();
@@ -247,11 +245,6 @@ $("typed").addEventListener("submit", (event) => {
   const value = $("typed-input").value;
   if (value.trim() === "") return;
   submit(value);
-});
-
-$("next").addEventListener("click", () => {
-  quiz.next();
-  renderQuestion();
 });
 
 $("again").addEventListener("click", start);

@@ -1,6 +1,7 @@
 // Every Power 4 football school for the 2025-26 season, the town its main campus is in, and its
 // mascot (the team nickname, e.g. "Crimson Tide", not the costumed character).
 // `townAliases` / `schoolAliases` / `mascotAliases` list other answers the typed mode should also accept.
+// `mascotSingular` is only needed when the singular isn't the plural with "s"/"es" dropped or "ies" -> "y".
 
 export const CONFERENCES = ["SEC", "Big Ten", "Big 12", "ACC"];
 
@@ -30,7 +31,7 @@ export const SCHOOLS = [
   { school: "South Carolina", town: "Columbia", state: "SC", conference: "SEC", mascot: "Gamecocks" },
   { school: "Tennessee", town: "Knoxville", state: "TN", conference: "SEC", mascot: "Volunteers", mascotAliases: ["Vols"] },
   { school: "Texas", town: "Austin", state: "TX", conference: "SEC", mascot: "Longhorns" },
-  { school: "Texas A&M", town: "College Station", state: "TX", conference: "SEC", mascot: "Aggies" },
+  { school: "Texas A&M", town: "College Station", state: "TX", conference: "SEC", mascot: "Aggies", mascotSingular: "Aggie" },
   { school: "Vanderbilt", town: "Nashville", state: "TN", conference: "SEC", mascot: "Commodores", mascotAliases: ["Dores"] },
 
   // Big Ten (18)
@@ -87,6 +88,6 @@ export const SCHOOLS = [
   { school: "Stanford", town: "Stanford", state: "CA", conference: "ACC", townAliases: ["Palo Alto"], mascot: "Cardinal" },
   { school: "Syracuse", town: "Syracuse", state: "NY", conference: "ACC", mascot: "Orange" },
   { school: "Virginia", town: "Charlottesville", state: "VA", conference: "ACC", schoolAliases: ["UVA"], mascot: "Cavaliers", mascotAliases: ["Hoos", "Wahoos"] },
-  { school: "Virginia Tech", town: "Blacksburg", state: "VA", conference: "ACC", mascot: "Hokies" },
+  { school: "Virginia Tech", town: "Blacksburg", state: "VA", conference: "ACC", mascot: "Hokies", mascotSingular: "Hokie" },
   { school: "Wake Forest", town: "Winston-Salem", state: "NC", conference: "ACC", mascot: "Demon Deacons" },
 ];
