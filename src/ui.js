@@ -2,6 +2,7 @@
 
 import { CONFERENCES, SCHOOLS } from "./schools.js";
 import { Mode, Quiz, correctAnswerText, streakLevel } from "./quiz.js";
+import { answeredSchool, themeFor, themeSchool } from "./theme.js";
 
 const $ = (id) => document.getElementById(id);
 const screens = { setup: $("setup"), game: $("game"), results: $("results") };
@@ -11,6 +12,18 @@ let settings = null;
 
 function show(name) {
   for (const key of Object.keys(screens)) screens[key].hidden = key !== name;
+  if (name !== "game") applyTheme(null);
+}
+
+// Paints the page in a school's colors, or back to the default navy and gold for null.
+function applyTheme(school) {
+  const root = document.documentElement.style;
+  const vars = school ? themeFor(school.colors) : themeFor(["#000000", "#FFFFFF"]);
+  for (const [name, value] of Object.entries(vars)) {
+    if (school) root.setProperty(name, value);
+    else root.removeProperty(name);
+  }
+  document.documentElement.toggleAttribute("data-themed", Boolean(school));
 }
 
 function buildConferencePills() {
@@ -128,6 +141,7 @@ function renderQuestion() {
     return;
   }
   const q = quiz.current;
+  applyTheme(themeSchool(q));
   renderStats();
 
   const confs = [...new Set(q.schools.map((s) => s.conference))];
@@ -165,6 +179,9 @@ function showFeedback(q, answer, result) {
   feedback.className = "feedback";
   void feedback.offsetWidth; // restart the slide-in animation
   feedback.className = `feedback ${kind}`;
+  const school = answeredSchool(q);
+  if (school) feedback.style.setProperty("--fb-team", school.colors[0]);
+  else feedback.style.removeProperty("--fb-team");
   feedback.querySelector(".fb-icon").innerHTML = ICONS[kind];
   feedback.querySelector(".fb-title").textContent = title;
   feedback.querySelector(".fb-detail").textContent = detail;
