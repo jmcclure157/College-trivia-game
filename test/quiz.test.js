@@ -236,3 +236,19 @@ test("Quiz refuses double answers and skipping ahead", () => {
   quiz.next();
   assert.throws(() => quiz.answer("z"));
 });
+
+test("a mascot with only its plural ending added or dropped counts as exact, not a typo", () => {
+  const mascot = (name) => buildQuestions({ mode: Mode.MASCOT, schools: [byName(name)] })[0];
+  assert.equal(matchAnswer(mascot("Kentucky"), "Wildcat"), "exact");
+  assert.equal(matchAnswer(mascot("Texas"), "Longhorn"), "exact");
+  assert.equal(matchAnswer(mascot("Washington"), "Husky"), "exact");
+  assert.equal(matchAnswer(mascot("Tennessee"), "Tennessee Volunteer"), "exact");
+  assert.equal(matchAnswer(mascot("Kentucky"), "Wildcat", { forgiveTypos: false }), "exact");
+  assert.equal(matchAnswer(mascot("Auburn"), "Tiger"), "exact");
+  assert.equal(new Quiz({ mode: Mode.MASCOT, schools: [byName("Kentucky")] }).answer("Wildcat").close, false);
+
+  // Another school's real nickname is still wrong, even one letter apart.
+  assert.equal(matchAnswer(mascot("Stanford"), "Cardinals"), null);
+  assert.equal(matchAnswer(mascot("Louisville"), "Cardinal"), null);
+  assert.equal(matchAnswer(mascot("Washington"), "Huskers"), null);
+});

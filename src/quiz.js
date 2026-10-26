@@ -184,7 +184,17 @@ function closestDistance(given, forms) {
   return best;
 }
 
-// "exact" for a right answer, "close" for a small misspelling of a right answer, otherwise null.
+// The same nickname with its plural ending added or dropped: "wildcat" <-> "wildcats", "husky" <-> "huskies".
+export function pluralForms(word) {
+  const out = [`${word}s`, `${word}es`];
+  if (word.endsWith("y")) out.push(`${word.slice(0, -1)}ies`);
+  if (word.endsWith("ies")) out.push(`${word.slice(0, -3)}y`);
+  if (word.endsWith("es")) out.push(word.slice(0, -2));
+  if (word.endsWith("s")) out.push(word.slice(0, -1));
+  return out;
+}
+
+// "exact" for a right answer (or a mascot with only its plural ending added or dropped), "close" for a small misspelling of a right answer, otherwise null.
 // A typo only counts when it is closer to a right answer than to any other school's answer,
 // and typing another school's real answer is always wrong.
 export function matchAnswer(question, answer, { forgiveTypos = true, pool = SCHOOLS } = {}) {
@@ -192,7 +202,6 @@ export function matchAnswer(question, answer, { forgiveTypos = true, pool = SCHO
   if (given === "") return null;
   const accepted = acceptedAnswers(question);
   if (accepted.indexOf(given) !== -1) return "exact";
-  if (!forgiveTypos) return null;
 
   const otherSchools = pool.filter((s) => question.schools.indexOf(s) === -1);
   const othersFor = (options) => {
@@ -206,6 +215,8 @@ export function matchAnswer(question, answer, { forgiveTypos = true, pool = SCHO
     return out;
   };
   if (othersFor().indexOf(given) !== -1) return null;
+  if (question.mode === Mode.MASCOT && pluralForms(given).some((f) => accepted.indexOf(f) !== -1)) return "exact";
+  if (!forgiveTypos) return null;
 
   // Town typos are judged on the town alone; a state, if typed, must be right.
   let guess = given;
