@@ -54,6 +54,18 @@ const BAR_MIN_CONTRAST = 1.4;
 const RING_MIN_CONTRAST = 3;
 // Header title in the secondary color only when it reads clearly on the primary.
 const TITLE_MIN_CONTRAST = 3;
+// The header's gradient darkens the primary by up to this much (keep in sync with `.hero` in style.css).
+export const HEADER_SHADE = 0.18;
+
+// Lowest contrast of `color` anywhere on the header, from the plain primary to its darkest shade.
+function headerContrast(color, primary) {
+  return Math.min(contrast(color, primary), contrast(color, darken(primary, HEADER_SHADE)));
+}
+
+// White or near-black, whichever stays easiest to read across the whole header (for the big title).
+function headerInk(primary) {
+  return headerContrast(WHITE, primary) >= headerContrast(DARK_INK, primary) ? WHITE : DARK_INK;
+}
 
 // CSS custom property values for a school's [primary, secondary] colors.
 export function themeFor([primary, secondary]) {
@@ -61,7 +73,7 @@ export function themeFor([primary, secondary]) {
     "--team": primary,
     "--team-ink": readableInk(primary),
     "--team-2": secondary,
-    "--team-title": contrast(secondary, primary) >= TITLE_MIN_CONTRAST ? secondary : readableInk(primary),
+    "--team-title": headerContrast(secondary, primary) >= TITLE_MIN_CONTRAST ? secondary : headerInk(primary),
     "--team-accent":
       contrast(secondary, WHITE) >= BAR_MIN_CONTRAST ? secondary : visibleOnWhite([primary, secondary], BAR_MIN_CONTRAST),
     "--team-ring": visibleOnWhite([primary, secondary], RING_MIN_CONTRAST),

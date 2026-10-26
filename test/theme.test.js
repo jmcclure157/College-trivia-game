@@ -8,6 +8,7 @@ import {
   WHITE,
   answeredSchool,
   contrast,
+  HEADER_SHADE,
   darken,
   hexToRgb,
   luminance,
@@ -46,8 +47,21 @@ test("every school's main color has readable text on it", () => {
   for (const s of SCHOOLS) {
     const t = themeFor(s.colors);
     assert.ok(contrast(t["--team"], t["--team-ink"]) >= 4.5, `${s.school}: text on ${t["--team"]}`);
-    assert.ok(contrast(t["--team"], t["--team-title"]) >= 3, `${s.school}: title on ${t["--team"]}`);
   }
+});
+
+test("every school's header title stays readable across the whole darkening gradient", () => {
+  for (const s of SCHOOLS) {
+    const t = themeFor(s.colors);
+    for (const bg of [t["--team"], darken(t["--team"], HEADER_SHADE)]) {
+      assert.ok(contrast(bg, t["--team-title"]) >= 3, `${s.school}: title on ${bg}`);
+    }
+  }
+});
+
+test("Georgia's black and Clemson's purple titles fall back to plain ink: they fade on the shaded header", () => {
+  assert.equal(themeFor(byName("Georgia").colors)["--team-title"], WHITE);
+  assert.equal(themeFor(byName("Clemson").colors)["--team-title"], DARK_INK);
 });
 
 test("thin accents never fade into the white card, and focus rings meet 3:1", () => {
