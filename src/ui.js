@@ -146,8 +146,7 @@ function renderQuestion() {
   input.focus();
 }
 
-function showFeedback(q, answer, result) {
-  const feedback = $("feedback");
+function showFeedback(feedback, q, answer, result) {
   const kind = result.correct ? "right" : "wrong";
   let title;
   let detail;
@@ -179,8 +178,12 @@ function submit(answer) {
   const result = quiz.answer(answer);
   quiz.next();
   renderQuestion();
-  if (quiz.finished) return;
-  const said = showFeedback(q, answer, result);
+  if (quiz.finished) {
+    const said = showFeedback($("final-feedback"), q, answer, result);
+    $("announce").textContent = `${said} Round over. ${$("final-score").textContent}`;
+    return;
+  }
+  const said = showFeedback($("feedback"), q, answer, result);
   $("announce").textContent = `${said} Next: ${$("ask").textContent} ${$("prompt").textContent}`;
   if (result.milestone) celebrate();
 }

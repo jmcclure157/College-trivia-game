@@ -247,6 +247,15 @@ test("a mascot with only its plural ending added or dropped counts as exact, not
   assert.equal(matchAnswer(mascot("Auburn"), "Tiger"), "exact");
   assert.equal(new Quiz({ mode: Mode.MASCOT, schools: [byName("Kentucky")] }).answer("Wildcat").close, false);
 
+  assert.equal(matchAnswer(mascot("Virginia Tech"), "Hokie", { forgiveTypos: false }), "exact");
+  assert.equal(matchAnswer(mascot("Texas A&M"), "Aggie", { forgiveTypos: false }), "exact");
+  assert.equal(matchAnswer(mascot("Colorado"), "Buffalo", { forgiveTypos: false }), "exact");
+  assert.equal(matchAnswer(mascot("Utah"), "Ute", { forgiveTypos: false }), "exact");
+  // Misspelled singulars are typos, not plurals: wrong when typo forgiveness is off.
+  for (const [name, typo] of [["Virginia Tech", "Hoky"], ["Texas A&M", "Aggy"], ["Colorado", "Buffaloe"], ["Kentucky", "Wildcatt"]]) {
+    assert.equal(matchAnswer(mascot(name), typo, { forgiveTypos: false }), null, typo);
+  }
+
   // Another school's real nickname is still wrong, even one letter apart.
   assert.equal(matchAnswer(mascot("Stanford"), "Cardinals"), null);
   assert.equal(matchAnswer(mascot("Louisville"), "Cardinal"), null);
