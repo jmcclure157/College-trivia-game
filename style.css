@@ -19,6 +19,14 @@
   --big-12: #c53030;
   --acc: #2f855a;
   --radius: 16px;
+  /* Team colors: navy and gold by default; ui.js swaps in a school's colors (see src/theme.js). */
+  --team: var(--navy);
+  --team-ink: #fff;
+  --team-2: var(--gold);
+  --team-title: #fff;
+  --team-accent: var(--gold);
+  --team-ring: var(--gold);
+  --team-speed: 0.45s;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
 }
 
@@ -30,7 +38,13 @@ body {
   margin: 0;
   min-height: 100vh;
   color: var(--ink);
-  background: var(--bg);
+  background-color: var(--bg);
+  transition: background-color var(--team-speed);
+}
+
+/* During a themed question the whole page takes the school's main color. */
+html[data-themed] body {
+  background-color: var(--team);
 }
 
 /* Header band */
@@ -38,20 +52,20 @@ body {
 .hero {
   padding: 36px 16px 92px;
   text-align: center;
-  color: #fff;
-  background:
+  color: var(--team-ink);
+  border-bottom: 6px solid var(--team-2);
+  background-color: var(--team);
+  background-image:
     repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 2px, transparent 2px 80px),
-    linear-gradient(160deg, var(--navy) 0%, var(--navy-2) 100%);
-}
-
-.ball {
-  width: 56px;
-  height: 35px;
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+    /* 0.18 must match HEADER_SHADE in src/theme.js, which checks text contrast on this shade. */
+    linear-gradient(160deg, transparent 0%, rgba(0, 0, 0, 0.18) 100%);
+  transition: background-color var(--team-speed), border-color var(--team-speed), color var(--team-speed);
 }
 
 h1 {
-  margin: 8px 0 0;
+  margin: 0;
+  color: var(--team-title);
+  transition: color var(--team-speed);
   font-size: clamp(1.8rem, 6vw, 2.8rem);
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -59,7 +73,7 @@ h1 {
 
 .subtitle {
   margin: 6px 0 0;
-  color: #c9d3e6;
+  opacity: 0.8;
   font-size: 1.05rem;
 }
 
@@ -145,7 +159,7 @@ button.link:hover {
 }
 
 :focus-visible {
-  outline: 3px solid var(--gold);
+  outline: 3px solid var(--team-ring);
   outline-offset: 2px;
 }
 
@@ -407,8 +421,9 @@ button.link:hover {
   height: 100%;
   width: 0;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--gold), var(--gold-dark));
-  transition: width 0.35s ease;
+  background-color: var(--team-accent);
+  background-image: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.15));
+  transition: width 0.35s ease, background-color var(--team-speed);
 }
 
 .stats {
@@ -489,8 +504,19 @@ button.link:hover {
 
 .typed input:focus {
   outline: none;
-  border-color: var(--navy);
-  box-shadow: 0 0 0 4px rgba(20, 33, 61, 0.1);
+  border-color: var(--team-ring);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--team-ring) 15%, transparent);
+}
+
+.typed button.primary {
+  background: var(--team);
+  color: var(--team-ink);
+  transition: transform 0.08s, background-color var(--team-speed), color var(--team-speed), filter 0.15s;
+}
+
+.typed button.primary:hover:not(:disabled) {
+  background: var(--team);
+  filter: brightness(1.15);
 }
 
 .feedback {
@@ -499,6 +525,7 @@ button.link:hover {
   gap: 12px;
   margin: 14px 0;
   padding: 14px 16px;
+  border-left: 6px solid var(--fb-team, transparent);
   border-radius: 12px;
   animation: slide-in 0.25s ease-out;
 }
@@ -776,6 +803,14 @@ button.link:hover {
   .heat.pop,
   .feedback {
     animation: none;
+  }
+
+  body,
+  .hero,
+  h1,
+  .bar-fill,
+  .typed button.primary {
+    transition: none;
   }
 }
 
