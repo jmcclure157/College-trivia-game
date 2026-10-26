@@ -1,19 +1,23 @@
-// Every Power 4 football school for the 2025-26 season, the town its main campus is in, and its
-// mascot (the team nickname, e.g. "Crimson Tide", not the costumed character).
+// Every FBS (top level of Division I) football school for the 2026 season, the town its main campus is in,
+// and its mascot (the team nickname, e.g. "Crimson Tide", not the costumed character).
 // `colors` are the school's two official colors (primary, secondary), used to theme the page.
 // `townAliases` / `schoolAliases` / `mascotAliases` list other answers the typed mode should also accept.
 // `mascotSingular` is only needed when the singular isn't the plural with "s"/"es" dropped or "ies" -> "y".
 
-export const CONFERENCES = ["SEC", "Big Ten", "Big 12", "ACC"];
+export const POWER_4 = ["SEC", "Big Ten", "Big 12", "ACC"];
+export const GROUP_OF_6 = ["American", "Sun Belt", "Mountain West", "MAC", "Conference USA", "Pac-12"];
+export const CONFERENCES = [...POWER_4, ...GROUP_OF_6, "Independent"];
 
 export const STATE_NAMES = {
-  AL: "Alabama", AR: "Arkansas", AZ: "Arizona", CA: "California", CO: "Colorado",
-  FL: "Florida", GA: "Georgia", IA: "Iowa", IL: "Illinois", IN: "Indiana",
-  KS: "Kansas", KY: "Kentucky", LA: "Louisiana", MA: "Massachusetts", MD: "Maryland",
-  MI: "Michigan", MN: "Minnesota", MO: "Missouri", MS: "Mississippi", NC: "North Carolina",
-  NE: "Nebraska", NJ: "New Jersey", NY: "New York", OH: "Ohio", OK: "Oklahoma",
-  OR: "Oregon", PA: "Pennsylvania", SC: "South Carolina", TN: "Tennessee", TX: "Texas",
-  UT: "Utah", VA: "Virginia", WA: "Washington", WI: "Wisconsin", WV: "West Virginia",
+  AK: "Alaska", AL: "Alabama", AR: "Arkansas", AZ: "Arizona", CA: "California", CO: "Colorado",
+  CT: "Connecticut", DE: "Delaware", FL: "Florida", GA: "Georgia", HI: "Hawaii", IA: "Iowa",
+  ID: "Idaho", IL: "Illinois", IN: "Indiana", KS: "Kansas", KY: "Kentucky", LA: "Louisiana",
+  MA: "Massachusetts", MD: "Maryland", ME: "Maine", MI: "Michigan", MN: "Minnesota", MO: "Missouri",
+  MS: "Mississippi", MT: "Montana", NC: "North Carolina", ND: "North Dakota", NE: "Nebraska",
+  NH: "New Hampshire", NJ: "New Jersey", NM: "New Mexico", NV: "Nevada", NY: "New York", OH: "Ohio",
+  OK: "Oklahoma", OR: "Oregon", PA: "Pennsylvania", RI: "Rhode Island", SC: "South Carolina",
+  SD: "South Dakota", TN: "Tennessee", TX: "Texas", UT: "Utah", VA: "Virginia", VT: "Vermont",
+  WA: "Washington", WI: "Wisconsin", WV: "West Virginia", WY: "Wyoming",
 };
 
 export const SCHOOLS = [
@@ -73,7 +77,7 @@ export const SCHOOLS = [
   { school: "Utah", town: "Salt Lake City", state: "UT", conference: "Big 12", mascot: "Utes", colors: ["#CC0000", "#FFFFFF"] },
   { school: "West Virginia", town: "Morgantown", state: "WV", conference: "Big 12", mascot: "Mountaineers", colors: ["#002855", "#EAAA00"] },
 
-  // ACC (17 football members; Notre Dame plays other ACC sports but is a football independent)
+  // ACC (17 football members; Notre Dame plays other ACC sports but is a football independent, listed below)
   { school: "Boston College", town: "Chestnut Hill", state: "MA", conference: "ACC", mascot: "Eagles", colors: ["#98002E", "#BC9B6A"] },
   { school: "Cal", town: "Berkeley", state: "CA", conference: "ACC", schoolAliases: ["California", "UC Berkeley"], mascot: "Golden Bears", colors: ["#003262", "#FDB515"] },
   { school: "Clemson", town: "Clemson", state: "SC", conference: "ACC", mascot: "Tigers", colors: ["#F56600", "#522D80"] },
@@ -91,4 +95,88 @@ export const SCHOOLS = [
   { school: "Virginia", town: "Charlottesville", state: "VA", conference: "ACC", schoolAliases: ["UVA"], mascot: "Cavaliers", mascotAliases: ["Hoos", "Wahoos"], colors: ["#232D4B", "#E57200"] },
   { school: "Virginia Tech", town: "Blacksburg", state: "VA", conference: "ACC", mascot: "Hokies", mascotSingular: "Hokie", colors: ["#861F41", "#E5751F"] },
   { school: "Wake Forest", town: "Winston-Salem", state: "NC", conference: "ACC", mascot: "Demon Deacons", colors: ["#9E7E38", "#000000"] },
+  // American (14)
+  { school: "Army", town: "West Point", state: "NY", conference: "American", schoolAliases: ["Army West Point"], mascot: "Black Knights", colors: ["#000000", "#D3BC8D"] },
+  { school: "Charlotte", town: "Charlotte", state: "NC", conference: "American", schoolAliases: ["UNC Charlotte"], mascotAliases: ["Niners", "Forty-Niners"], mascot: "49ers", colors: ["#005035", "#A49665"] },
+  { school: "East Carolina", town: "Greenville", state: "NC", conference: "American", schoolAliases: ["ECU"], mascot: "Pirates", colors: ["#592A8A", "#FDC82F"] },
+  { school: "Florida Atlantic", town: "Boca Raton", state: "FL", conference: "American", schoolAliases: ["FAU"], mascot: "Owls", colors: ["#003366", "#CC0000"] },
+  { school: "Memphis", town: "Memphis", state: "TN", conference: "American", mascot: "Tigers", colors: ["#003087", "#898D8D"] },
+  { school: "Navy", town: "Annapolis", state: "MD", conference: "American", mascotSingular: "Midshipman", mascot: "Midshipmen", colors: ["#00205B", "#C5B783"] },
+  { school: "North Texas", town: "Denton", state: "TX", conference: "American", schoolAliases: ["UNT"], mascot: "Mean Green", colors: ["#00853E", "#FFFFFF"] },
+  { school: "Rice", town: "Houston", state: "TX", conference: "American", mascot: "Owls", colors: ["#00205B", "#C1C6C8"] },
+  { school: "South Florida", town: "Tampa", state: "FL", conference: "American", schoolAliases: ["USF"], mascot: "Bulls", colors: ["#006747", "#CFC493"] },
+  { school: "Temple", town: "Philadelphia", state: "PA", conference: "American", mascot: "Owls", colors: ["#9D2235", "#FFFFFF"] },
+  { school: "Tulane", town: "New Orleans", state: "LA", conference: "American", mascot: "Green Wave", colors: ["#006747", "#418FDE"] },
+  { school: "Tulsa", town: "Tulsa", state: "OK", conference: "American", mascot: "Golden Hurricane", colors: ["#002D72", "#C5B783"] },
+  { school: "UAB", town: "Birmingham", state: "AL", conference: "American", schoolAliases: ["Alabama Birmingham", "Alabama at Birmingham"], mascot: "Blazers", colors: ["#1E6B52", "#F4C300"] },
+  { school: "UTSA", town: "San Antonio", state: "TX", conference: "American", schoolAliases: ["Texas San Antonio", "UT San Antonio"], mascot: "Roadrunners", colors: ["#0C2340", "#F15A22"] },
+
+  // Sun Belt (14)
+  { school: "Appalachian State", town: "Boone", state: "NC", conference: "Sun Belt", schoolAliases: ["App State"], mascot: "Mountaineers", colors: ["#222222", "#FFCC00"] },
+  { school: "Arkansas State", town: "Jonesboro", state: "AR", conference: "Sun Belt", mascotSingular: "Red Wolf", mascot: "Red Wolves", colors: ["#CC092F", "#000000"] },
+  { school: "Coastal Carolina", town: "Conway", state: "SC", conference: "Sun Belt", mascot: "Chanticleers", colors: ["#006F71", "#A27752"] },
+  { school: "Georgia Southern", town: "Statesboro", state: "GA", conference: "Sun Belt", mascot: "Eagles", colors: ["#011E41", "#A3AAAE"] },
+  { school: "Georgia State", town: "Atlanta", state: "GA", conference: "Sun Belt", mascot: "Panthers", colors: ["#0039A6", "#CC0000"] },
+  { school: "James Madison", town: "Harrisonburg", state: "VA", conference: "Sun Belt", schoolAliases: ["JMU"], mascot: "Dukes", colors: ["#450084", "#CBB677"] },
+  { school: "Louisiana", town: "Lafayette", state: "LA", conference: "Sun Belt", schoolAliases: ["Louisiana Lafayette", "UL Lafayette"], mascotAliases: ["Cajuns"], mascot: "Ragin' Cajuns", colors: ["#CE181E", "#FFFFFF"] },
+  { school: "Louisiana Monroe", town: "Monroe", state: "LA", conference: "Sun Belt", schoolAliases: ["ULM", "UL Monroe"], mascot: "Warhawks", colors: ["#800029", "#BD955A"] },
+  { school: "Louisiana Tech", town: "Ruston", state: "LA", conference: "Sun Belt", mascot: "Bulldogs", colors: ["#002F8B", "#E31B23"] },
+  { school: "Marshall", town: "Huntington", state: "WV", conference: "Sun Belt", mascotAliases: ["Herd"], mascot: "Thundering Herd", colors: ["#00B140", "#FFFFFF"] },
+  { school: "Old Dominion", town: "Norfolk", state: "VA", conference: "Sun Belt", schoolAliases: ["ODU"], mascot: "Monarchs", colors: ["#003057", "#7C878E"] },
+  { school: "South Alabama", town: "Mobile", state: "AL", conference: "Sun Belt", mascot: "Jaguars", colors: ["#00205B", "#BF0D3E"] },
+  { school: "Southern Miss", town: "Hattiesburg", state: "MS", conference: "Sun Belt", schoolAliases: ["Southern Mississippi"], mascot: "Golden Eagles", colors: ["#000000", "#FFAB00"] },
+  { school: "Troy", town: "Troy", state: "AL", conference: "Sun Belt", mascot: "Trojans", colors: ["#8A2432", "#B3B5B8"] },
+
+  // Mountain West (10)
+  { school: "Air Force", town: "Colorado Springs", state: "CO", conference: "Mountain West", townAliases: ["Air Force Academy", "USAF Academy"], mascot: "Falcons", colors: ["#003087", "#8A8D8F"] },
+  { school: "Hawaii", town: "Honolulu", state: "HI", conference: "Mountain West", mascotAliases: ["Warriors", "Rainbows"], mascot: "Rainbow Warriors", colors: ["#024731", "#FFFFFF"] },
+  { school: "Nevada", town: "Reno", state: "NV", conference: "Mountain West", mascot: "Wolf Pack", colors: ["#003366", "#807F84"] },
+  { school: "New Mexico", town: "Albuquerque", state: "NM", conference: "Mountain West", mascot: "Lobos", colors: ["#BA0C2F", "#A7A8AA"] },
+  { school: "North Dakota State", town: "Fargo", state: "ND", conference: "Mountain West", schoolAliases: ["NDSU"], mascot: "Bison", colors: ["#0A5640", "#FFC72A"] },
+  { school: "Northern Illinois", town: "DeKalb", state: "IL", conference: "Mountain West", schoolAliases: ["NIU"], mascot: "Huskies", colors: ["#BA0C2F", "#000000"] },
+  { school: "San Jose State", town: "San Jose", state: "CA", conference: "Mountain West", schoolAliases: ["SJSU"], mascot: "Spartans", colors: ["#0055A2", "#E5A823"] },
+  { school: "UNLV", town: "Las Vegas", state: "NV", conference: "Mountain West", schoolAliases: ["Nevada Las Vegas"], mascot: "Rebels", colors: ["#CF0A2C", "#666666"] },
+  { school: "UTEP", town: "El Paso", state: "TX", conference: "Mountain West", schoolAliases: ["Texas El Paso", "UT El Paso"], mascot: "Miners", colors: ["#041E42", "#FF8200"] },
+  { school: "Wyoming", town: "Laramie", state: "WY", conference: "Mountain West", mascot: "Cowboys", colors: ["#492F24", "#FFC425"] },
+
+  // MAC (13)
+  { school: "Akron", town: "Akron", state: "OH", conference: "MAC", mascot: "Zips", colors: ["#041E42", "#A89968"] },
+  { school: "Ball State", town: "Muncie", state: "IN", conference: "MAC", mascot: "Cardinals", colors: ["#BA0C2F", "#FFFFFF"] },
+  { school: "Bowling Green", town: "Bowling Green", state: "OH", conference: "MAC", schoolAliases: ["BGSU"], mascot: "Falcons", colors: ["#4F2C1D", "#FD5000"] },
+  { school: "Buffalo", town: "Buffalo", state: "NY", conference: "MAC", mascot: "Bulls", colors: ["#005BBB", "#FFFFFF"] },
+  { school: "Central Michigan", town: "Mount Pleasant", state: "MI", conference: "MAC", schoolAliases: ["CMU"], townAliases: ["Mt Pleasant"], mascot: "Chippewas", colors: ["#6A0032", "#FFC82E"] },
+  { school: "Eastern Michigan", town: "Ypsilanti", state: "MI", conference: "MAC", schoolAliases: ["EMU"], mascot: "Eagles", colors: ["#006633", "#FFFFFF"] },
+  { school: "Kent State", town: "Kent", state: "OH", conference: "MAC", mascotSingular: "Golden Flash", mascot: "Golden Flashes", colors: ["#002664", "#EAAB00"] },
+  { school: "Miami (OH)", town: "Oxford", state: "OH", conference: "MAC", schoolAliases: ["Miami Ohio", "Miami of Ohio", "Miami University"], mascot: "RedHawks", colors: ["#C3142D", "#FFFFFF"] },
+  { school: "Ohio", town: "Athens", state: "OH", conference: "MAC", schoolAliases: ["Ohio University"], mascot: "Bobcats", colors: ["#00694E", "#FFFFFF"] },
+  { school: "Sacramento State", town: "Sacramento", state: "CA", conference: "MAC", schoolAliases: ["Sac State"], mascot: "Hornets", colors: ["#043927", "#C4B581"] },
+  { school: "Toledo", town: "Toledo", state: "OH", conference: "MAC", mascot: "Rockets", colors: ["#15397F", "#FFCE00"] },
+  { school: "UMass", town: "Amherst", state: "MA", conference: "MAC", schoolAliases: ["Massachusetts"], mascotSingular: "Minuteman", mascot: "Minutemen", colors: ["#881C1C", "#000000"] },
+  { school: "Western Michigan", town: "Kalamazoo", state: "MI", conference: "MAC", schoolAliases: ["WMU"], mascot: "Broncos", colors: ["#6C4023", "#B5A167"] },
+
+  // Conference USA (10)
+  { school: "Delaware", town: "Newark", state: "DE", conference: "Conference USA", mascot: "Blue Hens", colors: ["#00539F", "#FFD200"] },
+  { school: "FIU", town: "Miami", state: "FL", conference: "Conference USA", schoolAliases: ["Florida International"], mascot: "Panthers", colors: ["#081E3F", "#B6862C"] },
+  { school: "Jacksonville State", town: "Jacksonville", state: "AL", conference: "Conference USA", schoolAliases: ["Jax State"], mascot: "Gamecocks", colors: ["#CC0000", "#FFFFFF"] },
+  { school: "Kennesaw State", town: "Kennesaw", state: "GA", conference: "Conference USA", mascot: "Owls", colors: ["#FDBB30", "#0B1315"] },
+  { school: "Liberty", town: "Lynchburg", state: "VA", conference: "Conference USA", mascot: "Flames", colors: ["#0A254E", "#C2002F"] },
+  { school: "Middle Tennessee", town: "Murfreesboro", state: "TN", conference: "Conference USA", schoolAliases: ["MTSU", "Middle Tennessee State"], mascot: "Blue Raiders", colors: ["#0066CC", "#FFFFFF"] },
+  { school: "Missouri State", town: "Springfield", state: "MO", conference: "Conference USA", mascot: "Bears", colors: ["#5E0009", "#FFFFFF"] },
+  { school: "New Mexico State", town: "Las Cruces", state: "NM", conference: "Conference USA", mascotSingular: "Aggie", mascot: "Aggies", colors: ["#8C0B42", "#FFFFFF"] },
+  { school: "Sam Houston", town: "Huntsville", state: "TX", conference: "Conference USA", schoolAliases: ["Sam Houston State"], mascot: "Bearkats", colors: ["#F47321", "#FFFFFF"] },
+  { school: "Western Kentucky", town: "Bowling Green", state: "KY", conference: "Conference USA", schoolAliases: ["WKU"], mascot: "Hilltoppers", colors: ["#C60C30", "#FFFFFF"] },
+
+  // Pac-12 (8, rebuilt for 2026)
+  { school: "Boise State", town: "Boise", state: "ID", conference: "Pac-12", mascot: "Broncos", colors: ["#0033A0", "#D64309"] },
+  { school: "Colorado State", town: "Fort Collins", state: "CO", conference: "Pac-12", mascot: "Rams", colors: ["#1E4D2B", "#C8C372"] },
+  { school: "Fresno State", town: "Fresno", state: "CA", conference: "Pac-12", mascot: "Bulldogs", colors: ["#DB0032", "#002E6D"] },
+  { school: "Oregon State", town: "Corvallis", state: "OR", conference: "Pac-12", mascot: "Beavers", colors: ["#000000", "#DC4405"] },
+  { school: "San Diego State", town: "San Diego", state: "CA", conference: "Pac-12", schoolAliases: ["SDSU"], mascot: "Aztecs", colors: ["#A6192E", "#000000"] },
+  { school: "Texas State", town: "San Marcos", state: "TX", conference: "Pac-12", mascot: "Bobcats", colors: ["#501214", "#8D734A"] },
+  { school: "Utah State", town: "Logan", state: "UT", conference: "Pac-12", mascotSingular: "Aggie", mascot: "Aggies", colors: ["#0F2439", "#8A8D8F"] },
+  { school: "Washington State", town: "Pullman", state: "WA", conference: "Pac-12", schoolAliases: ["Wazzu"], mascotAliases: ["Cougs"], mascot: "Cougars", colors: ["#981E32", "#5E6A71"] },
+
+  // Independents (2)
+  { school: "Notre Dame", town: "South Bend", state: "IN", conference: "Independent", townAliases: ["Notre Dame"], mascotAliases: ["Irish"], mascot: "Fighting Irish", colors: ["#0C2340", "#C99700"] },
+  { school: "UConn", town: "Storrs", state: "CT", conference: "Independent", schoolAliases: ["Connecticut"], mascot: "Huskies", colors: ["#000E2F", "#FFFFFF"] },
 ];

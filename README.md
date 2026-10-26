@@ -1,6 +1,6 @@
 # College Town Trivia
 
-A browser trivia game: do you know the home town of every Power 4 college football school?
+A browser trivia game: do you know the home town of every Power 4 college football school? Flip to **All D1** to play with all 138 FBS (top level of Division I) schools.
 Plain HTML, CSS and JavaScript. No build step, no dependencies, nothing is saved.
 
 ## How to play
@@ -35,9 +35,13 @@ Plain HTML, CSS and JavaScript. No build step, no dependencies, nothing is saved
 
 ## Which schools are included
 
-All 67 Power 4 football schools for the 2025-26 season:
+**Power 4** (the default): all 67 Power 4 football schools for the 2026 season,
 SEC (16), Big Ten (18), Big 12 (16) and ACC (17). The ACC has 18 members overall, but Notre Dame
-plays football as an independent, so it is left out. The town is the city the main campus is in
+plays football as an independent.
+
+**All D1**: all 138 FBS football schools for 2026. That's the Power 4 plus the American (14),
+Sun Belt (14), Mountain West (10), MAC (13), Conference USA (10), the rebuilt Pac-12 (8), and the
+independents Notre Dame and UConn. The town is the city the main campus is in
 (e.g. Ohio State → Columbus, USC → Los Angeles).
 
 ## Project layout
