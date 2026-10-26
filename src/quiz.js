@@ -73,11 +73,12 @@ export function buildQuestions({
   if (answersAreSchools(mode)) {
     const byPrompt = new Map();
     for (const s of selected) {
-      const key = promptText(mode, s, showStates);
-      if (!byPrompt.has(key)) byPrompt.set(key, []);
-      byPrompt.get(key).push(s);
+      const label = promptText(mode, s, showStates);
+      const key = normalize(label); // "Wolf Pack" (Nevada) and "Wolfpack" (NC State) are the same answer
+      if (!byPrompt.has(key)) byPrompt.set(key, { label, group: [] });
+      byPrompt.get(key).group.push(s);
     }
-    questions = Array.from(byPrompt, ([label, group]) => ({
+    questions = Array.from(byPrompt.values(), ({ label, group }) => ({
       mode,
       prompt: label,
       schools: group,
@@ -114,15 +115,8 @@ function answerForms(mode, school, { withStates = true } = {}) {
   return forms;
 }
 
-// States with no Power 4 school, so a typed wrong state like "NV" is still recognized as a state.
-const OTHER_STATES = {
-  AK: "Alaska", CT: "Connecticut", DE: "Delaware", HI: "Hawaii", ID: "Idaho",
-  ME: "Maine", MT: "Montana", NV: "Nevada", NH: "New Hampshire", NM: "New Mexico",
-  ND: "North Dakota", RI: "Rhode Island", SD: "South Dakota", VT: "Vermont", WY: "Wyoming",
-};
-
 const STATE_WORDS = new Map();
-for (const [code, name] of Object.entries({ ...STATE_NAMES, ...OTHER_STATES })) {
+for (const [code, name] of Object.entries(STATE_NAMES)) {
   STATE_WORDS.set(code.toLowerCase(), code);
   STATE_WORDS.set(name.toLowerCase(), code);
 }

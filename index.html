@@ -10,7 +10,7 @@
   <body>
     <header class="hero">
       <h1>College Town Trivia</h1>
-      <p class="subtitle">Where does every Power 4 football school call home?</p>
+      <p class="subtitle">Where does every big-time college football school call home?</p>
     </header>
 
     <main>
@@ -52,10 +52,16 @@
             </label>
           </div>
 
-          <h2 class="step"><span>2</span> Choose conferences</h2>
+          <h2 class="step"><span>2</span> Pick the schools</h2>
+          <div class="segmented">
+            <label><input type="radio" name="division" value="power4" checked /><span>Power 4 <small id="count-power4"></small></span></label>
+            <label><input type="radio" name="division" value="all" /><span>All D1 <small id="count-all"></small></span></label>
+          </div>
+
+          <h2 class="step"><span>3</span> Choose conferences</h2>
           <div id="conferences" class="pills"></div>
 
-          <h2 class="step"><span>3</span> Round length</h2>
+          <h2 class="step"><span>4</span> Round length</h2>
           <div class="segmented">
             <label><input type="radio" name="count" value="10" /><span>10</span></label>
             <label><input type="radio" name="count" value="25" /><span>25</span></label>

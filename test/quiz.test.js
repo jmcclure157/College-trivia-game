@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { SCHOOLS } from "../src/schools.js";
+import { POWER_4, SCHOOLS } from "../src/schools.js";
 import {
   Mode,
   Quiz,
@@ -82,12 +82,28 @@ test("reverse mode accepts school names and aliases", () => {
 });
 
 test("reverse mode asks about Los Angeles once and accepts UCLA or USC", () => {
-  const questions = buildQuestions({ mode: Mode.SCHOOL, rng: seeded(5) });
-  assert.equal(questions.length, SCHOOLS.length - 2);
+  const questions = buildQuestions({ mode: Mode.SCHOOL, conferences: POWER_4, rng: seeded(5) });
+  assert.equal(questions.length, 67 - 2);
   const la = questions.filter((q) => q.prompt === "Los Angeles");
   assert.equal(la.length, 1);
   assert.ok(isCorrect(la[0], "UCLA"));
   assert.ok(isCorrect(la[0], "Southern California"));
+});
+
+test("All D1 groups look-alike prompts: Oxford (Ole Miss, Miami (OH)) and Wolf Pack / Wolfpack", () => {
+  const oxford = buildQuestions({ mode: Mode.SCHOOL }).find((q) => q.prompt === "Oxford");
+  assert.deepEqual(oxford.correct, ["Ole Miss", "Miami (OH)"]);
+  assert.ok(isCorrect(oxford, "Miami of Ohio"));
+  assert.ok(isCorrect(oxford, "Ole Miss"));
+  const pack = buildQuestions({ mode: Mode.MASCOT_SCHOOL }).filter((q) => normalize(q.prompt) === "wolfpack");
+  assert.equal(pack.length, 1);
+  assert.ok(isCorrect(pack[0], "NC State"));
+  assert.ok(isCorrect(pack[0], "Nevada"));
+});
+
+test("Power 4 rounds still guard against All D1 look-alikes", () => {
+  const [q] = buildQuestions({ mode: Mode.SCHOOL, schools: [byName("Ohio State")] });
+  assert.equal(matchAnswer(q, "Ohio"), null);
 });
 
 test("states are hidden by default and shown when asked for", () => {
@@ -177,8 +193,8 @@ test("mascot mode never accepts a different school's similar nickname", () => {
 });
 
 test("reverse mascot mode asks about shared nicknames once and accepts any of their schools", () => {
-  const questions = buildQuestions({ mode: Mode.MASCOT_SCHOOL });
-  assert.equal(questions.length, SCHOOLS.length - 3 - 1 - 3 - 1);
+  const questions = buildQuestions({ mode: Mode.MASCOT_SCHOOL, conferences: POWER_4 });
+  assert.equal(questions.length, 67 - 3 - 1 - 3 - 1);
   const tigers = questions.find((q) => q.prompt === "Tigers");
   for (const name of ["Auburn", "LSU", "Missouri", "Clemson", "Mizzou"]) assert.ok(isCorrect(tigers, name), name);
   assert.ok(!isCorrect(tigers, "Alabama"));

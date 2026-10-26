@@ -18,6 +18,13 @@
   --big-ten: #2b6cb0;
   --big-12: #c53030;
   --acc: #2f855a;
+  --american: #1f3a93;
+  --sun-belt: #d97706;
+  --mountain-west: #4a5568;
+  --mac: #276749;
+  --cusa: #6b46c1;
+  --pac-12: #2c5282;
+  --independent: #744210;
   --radius: 16px;
   /* Team colors: navy and gold by default; ui.js swaps in a school's colors (see src/theme.js). */
   --team: var(--navy);
@@ -310,6 +317,27 @@ button.link:hover {
 }
 [data-conf="ACC"] {
   --c: var(--acc);
+}
+[data-conf="American"] {
+  --c: var(--american);
+}
+[data-conf="Sun Belt"] {
+  --c: var(--sun-belt);
+}
+[data-conf="Mountain West"] {
+  --c: var(--mountain-west);
+}
+[data-conf="MAC"] {
+  --c: var(--mac);
+}
+[data-conf="Conference USA"] {
+  --c: var(--cusa);
+}
+[data-conf="Pac-12"] {
+  --c: var(--pac-12);
+}
+[data-conf="Independent"] {
+  --c: var(--independent);
 }
 
 .segmented {

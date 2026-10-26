@@ -1,6 +1,6 @@
 // Page code: shows the screens and turns clicks/typing into Quiz calls.
 
-import { CONFERENCES, SCHOOLS } from "./schools.js";
+import { CONFERENCES, POWER_4, SCHOOLS } from "./schools.js";
 import { Mode, Quiz, correctAnswerText, streakLevel } from "./quiz.js";
 import { answeredSchool, themeFor, themeSchool } from "./theme.js";
 
@@ -32,6 +32,7 @@ function buildConferencePills() {
     const label = document.createElement("label");
     label.className = "pill";
     label.dataset.conf = conf;
+    if (!POWER_4.includes(conf)) label.dataset.extra = "";
     const box = document.createElement("input");
     box.type = "checkbox";
     box.name = "conference";
@@ -43,6 +44,15 @@ function buildConferencePills() {
     text.append(conf, " ", num);
     label.append(box, text);
     $("conferences").append(label);
+  }
+}
+
+// "Power 4" hides the other FBS conferences; disabled boxes are left out of the form data.
+function syncDivision() {
+  const all = $("setup-form").elements.division.value === "all";
+  for (const label of $("conferences").querySelectorAll("[data-extra]")) {
+    label.hidden = !all;
+    label.querySelector("input").disabled = !all;
   }
 }
 
@@ -244,6 +254,10 @@ function renderResults() {
 }
 
 buildConferencePills();
+$("count-power4").textContent = SCHOOLS.filter((s) => POWER_4.includes(s.conference)).length;
+$("count-all").textContent = SCHOOLS.length;
+for (const radio of $("setup-form").elements.division) radio.addEventListener("change", syncDivision);
+syncDivision();
 
 $("setup-form").addEventListener("submit", (event) => {
   event.preventDefault();
