@@ -14,13 +14,6 @@ export function answersAreSchools(mode) {
   return mode === Mode.SCHOOL || mode === Mode.MASCOT_SCHOOL;
 }
 
-export const AnswerStyle = Object.freeze({
-  CHOICE: "choice",
-  TYPED: "typed",
-});
-
-export const CHOICE_COUNT = 4;
-
 export function shuffle(items, rng = Math.random) {
   const out = items.slice();
   for (let i = out.length - 1; i > 0; i--) {
@@ -106,24 +99,6 @@ function answerLabel(mode, school, showStates) {
   if (answersAreSchools(mode)) return school.school;
   if (mode === Mode.MASCOT) return school.mascot;
   return townText(school, showStates);
-}
-
-// Wrong options come from the same conference first, then from the rest of `pool`.
-export function makeChoices(question, { pool = SCHOOLS, rng = Math.random, count = CHOICE_COUNT, showStates = false } = {}) {
-  const conferences = question.schools.map((s) => s.conference);
-  const isRight = (s) => question.correct.indexOf(answerLabel(question.mode, s, showStates)) !== -1 || question.schools.indexOf(s) !== -1;
-  const others = pool.filter((s) => !isRight(s));
-  const near = shuffle(others.filter((s) => conferences.indexOf(s.conference) !== -1), rng);
-  const far = shuffle(others.filter((s) => conferences.indexOf(s.conference) === -1), rng);
-
-  const wrong = [];
-  for (const s of near.concat(far)) {
-    if (wrong.length >= count - 1) break;
-    const label = answerLabel(question.mode, s, showStates);
-    if (wrong.indexOf(label) === -1) wrong.push(label);
-  }
-  const right = question.correct[Math.floor(rng() * question.correct.length)];
-  return shuffle([right].concat(wrong), rng);
 }
 
 function answerForms(mode, school, { withStates = true } = {}) {
@@ -295,7 +270,6 @@ export function correctAnswerText(question) {
 export class Quiz {
   constructor({
     mode = Mode.TOWN,
-    style = AnswerStyle.CHOICE,
     conferences = [],
     count = null,
     forgiveTypos = true,
@@ -304,13 +278,9 @@ export class Quiz {
     rng = Math.random,
   } = {}) {
     this.mode = mode;
-    this.style = style;
     this.forgiveTypos = forgiveTypos;
     this.pool = schools;
     this.questions = buildQuestions({ mode, schools, conferences, count, showStates, rng });
-    if (style === AnswerStyle.CHOICE) {
-      for (const q of this.questions) q.choices = makeChoices(q, { pool: schools, rng, showStates });
-    }
     this.index = 0;
     this.score = 0;
     this.streak = 0;
