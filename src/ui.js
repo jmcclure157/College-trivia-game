@@ -222,7 +222,8 @@ function renderResults() {
     item.append(prompt, answer, yours);
     list.append(item);
   }
-  $("again").focus();
+  window.scrollTo(0, 0);
+  $("again").focus({ preventScroll: true });
 }
 
 buildConferencePills();
