@@ -73,3 +73,12 @@ test("mascot spot checks", () => {
   assert.equal(mascot("Louisville"), "Cardinals");
   assert.equal(mascot("Syracuse"), "Orange");
 });
+
+test("every school has exactly two #rrggbb colors (primary, secondary)", () => {
+  for (const s of SCHOOLS) {
+    assert.ok(Array.isArray(s.colors), `${s.school}: colors`);
+    assert.equal(s.colors.length, 2, `${s.school}: colors`);
+    for (const c of s.colors) assert.match(c, /^#[0-9A-Fa-f]{6}$/, `${s.school}: ${c}`);
+    assert.notEqual(s.colors[0].toUpperCase(), s.colors[1].toUpperCase(), `${s.school}: two different colors`);
+  }
+});
