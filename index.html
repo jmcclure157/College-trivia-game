@@ -112,13 +112,14 @@
           <input id="typed-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Your answer" />
           <button type="submit" class="primary">Answer</button>
         </form>
-        <div id="feedback" class="feedback" aria-live="polite" hidden>
+        <div id="feedback" class="feedback" aria-hidden="true" hidden>
           <span class="fb-icon" aria-hidden="true"></span>
           <div>
             <p class="fb-title"></p>
             <p class="fb-detail"></p>
           </div>
         </div>
+        <p id="announce" class="sr-only" aria-live="polite"></p>
         <button id="next" type="button" class="primary big" hidden>Next</button>
       </section>
 

@@ -138,6 +138,7 @@ function renderQuestion() {
   $("prompt").textContent = q.mode === Mode.SCHOOL ? q.prompt : `${q.prompt}?`;
 
   $("feedback").hidden = true;
+  $("announce").textContent = "";
   $("next").hidden = true;
 
   const typed = $("typed");
@@ -175,6 +176,7 @@ function submit(answer) {
   feedback.querySelector(".fb-title").textContent = title;
   feedback.querySelector(".fb-detail").textContent = detail;
   feedback.hidden = false;
+  $("announce").textContent = `${/[.!]$/.test(title) ? title : `${title}.`} ${detail}`;
 
   const input = $("typed-input");
   input.disabled = true;
